@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sewa Properti | Manajemen Pembayaran</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+
+    <script src="js/views.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { primary: '#2563eb', dark: '#0f172a' } } }
+        }
+    </script>
+</head>
+<body class="flex h-screen bg-[#f8fafc] overflow-hidden font-sans relative text-slate-800">
+
+    <aside class="w-72 bg-white border-r border-slate-200 flex-col hidden lg:flex z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] shrink-0 print:hidden">
+        <div class="h-20 flex items-center px-8 border-b border-slate-100 cursor-pointer" onclick="window.location.href='index.html'">
+            <div class="w-9 h-9 bg-emerald-500 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-emerald-200">
+                <i class="ph-fill ph-credit-card text-white text-xl"></i>
+            </div>
+            <h1 class="font-black text-xl tracking-tight text-slate-800 uppercase">Core<span class="text-emerald-500">Finance</span></h1>
+        </div>
+        
+        <div class="px-6 py-8 flex-1 overflow-y-auto">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">Menu Utama</p>
+            <nav id="sidebar-menu" class="flex flex-col gap-1.5">
+                </nav>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative print:hidden">
+        
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 lg:px-10 z-30 sticky top-0 shrink-0">
+            <div class="flex items-center gap-4">
+                <div class="lg:hidden w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shadow-md">
+                    <i class="ph-fill ph-credit-card text-white text-sm"></i>
+                </div>
+                <h2 id="page-title" class="text-xl font-black text-slate-800 tracking-tighter hidden md:block">
+                    </h2>
+            </div>
+            
+            <div class="flex items-center gap-4 sm:gap-6">
+                
+                <button onclick="window.openProfileModal()" class="flex items-center gap-3 text-left hover:bg-slate-50 p-2 rounded-2xl transition active:scale-95 border border-transparent hover:border-slate-100">
+                    <div class="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-600 text-white rounded-xl flex items-center justify-center font-black text-lg shadow-md" id="header-initial">
+                        -
+                    </div>
+                    <div class="hidden md:block">
+                        <p class="text-sm font-bold text-slate-800 truncate max-w-[120px] capitalize" id="header-name">Memuat...</p>
+                        <p class="text-[10px] font-black text-emerald-500 uppercase tracking-widest" id="header-role">Role</p>
+                    </div>
+                    <i class="ph-bold ph-caret-down text-slate-400 hidden sm:block"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-[#f8fafc] p-6 lg:p-10 scroll-smooth relative">
+            <div class="max-w-6xl mx-auto space-y-8">
+                
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-800 tracking-tighter">Tagihan <span class="text-blue-600">Kontrak</span></h2>
+                    </div>
+                        
+                        <button id="btn-tambah" onclick="openModal()" class="hidden bg-emerald-500 text-white px-6 py-4 rounded-2xl font-bold text-sm hover:bg-emerald-600 shadow-xl shadow-emerald-200 transition-all items-center justify-center gap-2 active:scale-95 shrink-0">
+                            <i class="ph-bold ph-plus text-lg"></i> <span class="hidden sm:inline">BUAT TAGIHAN MANUAL</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="payment-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="modal-profile" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[70] items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 max-h-[95vh] overflow-y-auto">
+            <div class="bg-gradient-to-br from-emerald-500 to-teal-700 p-8 text-center relative">
+                <button onclick="window.closeProfileModal()" class="absolute top-4 right-4 text-white/70 hover:text-white transition">
+                    <i class="ph ph-x-circle text-3xl"></i>
+                </button>
+                <div class="w-20 h-20 bg-white/20 backdrop-blur-md text-white rounded-2xl flex items-center justify-center font-black text-4xl mx-auto mb-4 border border-white/30 shadow-inner" id="modal-prof-initial">
+                    -
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter capitalize" id="modal-prof-name">Nama</h3>
+                <p class="text-emerald-100 text-xs font-bold uppercase tracking-widest mt-1" id="modal-prof-role">Role Account</p>
+                <div id="badge-verifikasi" class="hidden"></div>
+            </div>
+            <form id="form-update-profil" class="p-8 space-y-4" onsubmit="window.submitUpdateProfile(event)">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label id="label-prof-nama" class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">Nama Lengkap</label>
+                        <div class="relative">
+                            <i class="ph-bold ph-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="prof-nama" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 font-bold text-slate-700 transition">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">No. Telepon</label>
+                        <div class="relative">
+                            <i class="ph-bold ph-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="prof-telepon" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 font-bold text-slate-700 transition">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">Email (Akun Login Tetap)</label>
+                    <div class="relative">
+                        <i class="ph-bold ph-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="email" id="prof-email" readonly class="w-full pl-11 pr-4 py-3 bg-slate-100 border border-slate-200 rounded-xl outline-none text-slate-500 font-bold cursor-not-allowed">
+                    </div>
+                </div>
+                <div id="wrap-prof-alamat">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">Alamat Domisili Lengkap</label>
+                    <div class="relative">
+                        <i class="ph-bold ph-map-pin absolute left-4 top-4 text-slate-400"></i>
+                        <textarea id="prof-alamat" rows="3" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 font-bold text-slate-700 transition resize-none"></textarea>
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-slate-100 flex gap-3">
+                    <button type="button" onclick="State.clearAuth()" class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition active:scale-95 shadow-sm border border-red-100 hover:border-red-500" title="Logout">
+                        <i class="ph-bold ph-power text-xl"></i>
+                    </button>
+                    <button type="submit" id="btn-submit-profil" class="flex-1 bg-emerald-500 text-white py-3 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-emerald-600 transition active:scale-95 shadow-lg shadow-emerald-200 flex justify-center items-center gap-2">
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-payment" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl p-10 border border-slate-100 overflow-y-auto max-h-[90vh]">
+            <div class="flex justify-between items-start mb-8">
+                <h3 id="modal-title" class="text-2xl font-black text-slate-800 uppercase tracking-tighter">Kelola Tagihan</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 transition"><i class="ph-fill ph-x-circle text-3xl"></i></button>
+            </div>
+
+            <form id="formPayment" class="space-y-4">
+                <input type="hidden" id="pay-id">
+                
+                <div id="manager-only-fields" class="hidden">
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">ID Kontrak Terkait</label>
+                        <select id="pay-kontrak" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-600 transition-all font-bold">
+                            <option value="">-- Pilih Kontrak --</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Tgl Jatuh Tempo</label>
+                            <input type="date" id="pay-tempo" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-emerald-600 transition-all font-medium">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Jumlah Tagihan (Rp)</label>
+                            <input type="text" id="pay-tagihan-display" required readonly class="w-full p-3.5 bg-slate-100 border border-slate-200 rounded-xl outline-none font-black text-emerald-600 cursor-not-allowed">
+                            <input type="hidden" id="pay-tagihan" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50/50 p-6 rounded-3xl border border-slate-100 mt-4">
+                    <p class="text-[10px] font-black uppercase text-slate-400 mb-4 tracking-widest text-center">Update Pembayaran</p>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Total Dibayar (Akumulasi Rp)</label>
+                            <input type="text" id="pay-dibayar-display" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl outline-none font-black text-emerald-600 focus:border-emerald-600 transition-all placeholder:text-slate-300" placeholder="Ketik nominal...">
+                            <input type="hidden" id="pay-dibayar">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Status Verifikasi</label>
+                            <select id="pay-status" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl font-bold uppercase tracking-wide focus:border-emerald-600 transition-all text-slate-700">
+                                <option value="menunggu">MENUNGGU</option>
+                                <option value="terverifikasi">TERVERIFIKASI</option>
+                                <option value="ditolak">DITOLAK</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Catatan/Alasan</label>
+                            <textarea id="pay-catatan" class="w-full p-3.5 bg-white border border-slate-200 rounded-xl outline-none h-24 text-sm focus:border-emerald-600 transition-all resize-none" placeholder="Contoh: Pembayaran cicilan 1 diterima via BCA..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-emerald-500 text-white py-4 rounded-xl font-black uppercase tracking-widest mt-6 hover:bg-emerald-600 transition active:scale-95 shadow-lg shadow-emerald-200">SIMPAN PERUBAHAN</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-upload" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] shadow-2xl p-8 border border-slate-100 text-center">
+            <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-100">
+                <i class="ph-fill ph-upload-simple text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-black text-slate-800 uppercase tracking-tight">Upload Bukti Transfer</h3>
+            <p class="text-xs text-slate-500 mt-2 mb-6 font-medium">Pastikan nominal dan tanggal terlihat jelas.</p>
+            
+            <form id="formUpload">
+                <input type="hidden" id="upload-pay-id">
+                <label class="block w-full cursor-pointer bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-8 hover:bg-slate-100 hover:border-emerald-300 transition-all mb-4 group">
+                    <input type="file" id="upload-file" class="hidden" accept="image/*" required>
+                    <i class="ph-fill ph-image text-4xl text-slate-300 group-hover:text-emerald-400 transition-colors"></i>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase mt-2" id="file-name-display">Klik untuk pilih gambar</p>
+                </label>
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeUpload()" class="flex-1 py-3.5 bg-slate-50 rounded-xl text-xs font-black text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition uppercase tracking-widest">Batal</button>
+                    <button type="submit" class="flex-1 bg-emerald-500 text-white py-3.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-200 hover:bg-emerald-600 transition active:scale-95">Kirim Bukti</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="print-template" class="hidden print:block w-full max-w-4xl mx-auto bg-white font-sans text-slate-800 p-8">
+        
+        <div class="flex justify-between items-start border-b-2 border-slate-800 pb-6 mb-8">
+            <div>
+                <h1 class="font-black text-4xl tracking-tight uppercase">Core<span class="text-emerald-500">Finance</span></h1>
+                <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1.5">Sistem Pembayaran & Tagihan</p>
+            </div>
+            <div class="text-right">
+                <h2 class="text-4xl font-black text-slate-200 uppercase tracking-widest">INVOICE</h2>
+                <p class="text-sm font-bold mt-2 text-slate-800">Nomor: <span id="print-no-inv" class="text-emerald-600">INV-0000</span></p>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-0.5">Tgl Cetak: <span id="print-tgl">DD/MM/YYYY</span></p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-8 mb-8">
+            <div class="bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Ditagihkan Kepada:</p>
+                <h3 id="print-nama-tenant" class="text-lg font-black uppercase text-slate-800">Nama Penyewa</h3>
+                <p id="print-telp-tenant" class="text-sm font-bold text-slate-500 mt-1">Kontrak ID: -</p>
+                <p class="text-xs font-medium text-slate-500 mt-1">Penyewa Resmi Terdaftar</p>
+            </div>
+            
+            <div class="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
+                <p class="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-3">Detail Properti:</p>
+                <h3 id="print-nama-prop" class="text-lg font-black uppercase text-emerald-900">Nama Properti</h3>
+                <p id="print-tipe-prop" class="text-sm font-bold text-emerald-600 mt-1">Properti Sewa</p>
+                <p id="print-kode-prop" class="text-xs font-black uppercase tracking-widest text-emerald-500 mt-1">KODE: -</p>
+            </div>
+        </div>
+
+        <div class="border border-slate-200 rounded-2xl overflow-hidden mb-8">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-800 text-white">
+                        <th class="p-4 text-xs font-black uppercase tracking-widest">Deskripsi Tagihan</th>
+                        <th class="p-4 text-xs font-black uppercase tracking-widest text-center">Periode / Keterangan</th>
+                        <th class="p-4 text-xs font-black uppercase tracking-widest text-right">Total (Rp)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <tr>
+                        <td class="p-6">
+                            <p class="font-bold text-sm text-slate-800 uppercase">Biaya Sewa Properti</p>
+                            <p class="text-xs text-slate-500 mt-1 font-medium">Sesuai kesepakatan kontrak</p>
+                        </td>
+                        <td class="p-6 text-center text-sm font-bold text-slate-600" id="print-periode">
+                            Jatuh Tempo: -
+                        </td>
+                        <td class="p-6 text-right font-black text-lg text-slate-800" id="print-nominal">
+                            Rp 0
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex justify-between items-end border-b-2 border-slate-100 pb-8 mb-8">
+            <div>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Status Pembayaran:</p>
+                <div id="print-status-badge" class="inline-block border-2 border-slate-300 text-slate-500 px-6 py-2 rounded-xl font-black uppercase tracking-widest text-sm">
+                    STATUS TRANSAKSI
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Keseluruhan</p>
+                <h2 id="print-total-final" class="text-4xl font-black text-emerald-600">Rp 0</h2>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-start text-sm">
+            <div class="max-w-xs">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Instruksi Pembayaran</p>
+                <p class="font-bold text-slate-600 text-xs leading-relaxed">
+                    Harap melakukan pembayaran melalui transfer ke rekening pengelola. Simpan kuitansi ini sebagai bukti pembayaran yang sah jika status sudah LUNAS.
+                </p>
+            </div>
+            <div class="text-center pt-4">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-12">Mengetahui,</p>
+                <p class="font-black text-slate-800 uppercase underline decoration-2 underline-offset-4">Manajer Properti</p>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Building Management</p>
+        </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. INISIALISASI STATE GLOBAL
+        window.State = {
+            user: {
+                token: localStorage.getItem('token'),
+                role: localStorage.getItem('role') || 'admin',
+                nama: localStorage.getItem('nama'),
+                email: localStorage.getItem('email'),
+                telepon: localStorage.getItem('telepon'),
+                telepon_pengelola: localStorage.getItem('telepon_pengelola'),
+                alamat_domisili: localStorage.getItem('alamat_domisili'),
+                status_verifikasi: localStorage.getItem('status_verifikasi')
+            },
+            clearAuth: () => {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            },
+            syncProfile: () => {
+                localStorage.setItem('nama', State.user.nama || '');
+                localStorage.setItem('telepon', State.user.telepon || State.user.telepon_pengelola || '');
+                localStorage.setItem('alamat_domisili', State.user.alamat_domisili || '');
+                window.location.reload(); 
+            }
+        };
+
+        const TOKEN = State.user.token;
+        const ROLE = State.user.role;
+        
+        if (!TOKEN) window.location.href = 'index.html';
+
+        // 2. RENDER HEADER & SIDEBAR DINAMIS
+        let rawName = State.user.nama;
+        if (!rawName && State.user.email) {
+            rawName = State.user.email.split('@')[0];
+        }
+        const userName = rawName || ROLE;
+        const initial = userName.charAt(0).toUpperCase();
+
+        document.getElementById('header-name').innerText = userName;
+        document.getElementById('header-role').innerText = ROLE;
+        document.getElementById('header-initial').innerText = initial;
+        
+        document.getElementById('modal-prof-name').innerText = userName;
+        document.getElementById('modal-prof-role').innerText = ROLE + " Account";
+        document.getElementById('modal-prof-initial').innerText = initial;
+
+        const menuContainer = document.getElementById('sidebar-menu');
+        const pageTitle = document.getElementById('page-title');
+
+        if (ROLE === 'manager' || ROLE === 'admin') {
+            menuContainer.innerHTML = `
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-squares-four text-xl"></i><span>Dashboard</span>
+                </a>
+                <a href="properti.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-house-line text-xl"></i><span>Manajemen Unit</span>
+                </a>
+                <a href="tenant.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-users-three text-xl"></i><span>Data Penyewa</span>
+                </a>
+                <a href="kontrak.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-file-text text-xl"></i><span>Kontrak Sewa</span>
+                </a>
+                <a href="pembayaran.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 bg-emerald-50 text-emerald-600 shadow-sm border border-emerald-100">
+                    <i class="ph-bold ph-credit-card text-xl"></i><span>Keuangan</span>
+                </a>
+            `;
+            pageTitle.innerHTML = `Manajemen <span class="text-emerald-500">Keuangan</span>`;
+        } else if (ROLE === 'tenant') {
+            menuContainer.innerHTML = `
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-squares-four text-xl"></i><span>Dashboard</span>
+                </a>
+                <a href="properti.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-storefront text-xl"></i><span>Katalog Property</span>
+                </a>
+                <a href="kontrak.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-file-text text-xl"></i><span>Kontrak Saya</span>
+                </a>
+                <a href="pembayaran.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 bg-emerald-50 text-emerald-600 shadow-sm border border-emerald-100">
+                    <i class="ph-bold ph-receipt text-xl"></i><span>Tagihan & Bayar</span>
+                </a>
+            `;
+            pageTitle.innerHTML = `Tagihan <span class="text-emerald-500">Pembayaran Kontrak Properti</span>`;
+        }
+
+        // Tampilkan teks file upload saat file dipilih
+        document.getElementById('upload-file').addEventListener('change', function() {
+            if(this.files.length > 0) {
+                document.getElementById('file-name-display').innerText = this.files[0].name;
+                document.getElementById('file-name-display').classList.add('text-emerald-500');
+            }
+        });
+
+        // ==========================================
+        // 3. LOGIKA API & TAMPILAN GRID CARD
+        // ==========================================
+        const API_URL = 'http://127.0.0.1:3000/api/pembayaran';
+        const BASE_IMG_PROP = 'http://127.0.0.1:3000/uploads/';
+        const PAY_IMG_URL = 'http://127.0.0.1:3000/uploads/payments/';
+
+        window.kontrakCacheMap = {};
+
+        async function loadData() {
+            const gridContainer = document.getElementById('payment-grid-container');
+            try {
+                // SINKRONISASI CACHE
+                const resKontrak = await fetch('http://127.0.0.1:3000/api/kontrak', { 
+                    headers: { 'Authorization': `Bearer ${TOKEN}` } 
+                });
+                const resultKontrak = await resKontrak.json();
+                if (resultKontrak.success) {
+                    resultKontrak.data.forEach(k => {
+                        window.kontrakCacheMap[k.id_kontrak] = k;
+                    });
+                }
+
+                // Render otomatis opsi dropdown kontrak
+                const selectKontrak = document.getElementById('pay-kontrak');
+                const currentVal = selectKontrak.value;
+                selectKontrak.innerHTML = '<option value="">-- Pilih Kontrak Aktif --</option>';
+                Object.values(window.kontrakCacheMap).forEach(k => {
+                    selectKontrak.innerHTML += `<option value="${k.id_kontrak}" data-tagihan="${k.total_nilai_kontrak}">#${k.id_kontrak} - ${k.nama_properti} (${k.nama_tenant})</option>`;
+                });
+                if(currentVal) selectKontrak.value = currentVal;
+
+                // TARIK DATA PEMBAYARAN
+                const res = await fetch(API_URL, { headers: { 'Authorization': `Bearer ${TOKEN}` } });
+                const result = await res.json();
+                
+                if (result.success) {
+                    if(result.data.length === 0) {
+                        gridContainer.innerHTML = `
+                            <div class="col-span-full flex flex-col items-center justify-center py-20 text-center bg-white rounded-[2rem] border border-slate-200 shadow-sm">
+                                <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                                    <i class="ph-bold ph-receipt text-4xl text-slate-300"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-slate-800 tracking-tight">Tidak Ada Tagihan</h3>
+                                <p class="text-slate-500 font-medium mt-1">Belum ada riwayat tagihan sewa yang terdaftar untuk Anda.</p>
+                            </div>`;
+                        return;
+                    }
+
+                    gridContainer.innerHTML = result.data.map(p => {
+                        const statusClass = {
+                            'menunggu': 'bg-amber-100 text-amber-600',
+                            'terverifikasi': 'bg-emerald-100 text-emerald-600',
+                            'ditolak': 'bg-rose-100 text-rose-600'
+                        }[p.status_bayar];
+
+                        const kontrakInfo = window.kontrakCacheMap[p.id_kontrak] || {};
+                        const namaTenant = kontrakInfo.nama_tenant || 'N/A';
+                        const gambarProperti = kontrakInfo.gambar_properti || 'default.jpg';
+                        const namaProperti = p.nama_properti || kontrakInfo.nama_properti || 'Unit Properti';
+                        const kodeProperti = p.kode_properti || kontrakInfo.kode_properti || '#--';
+
+                        const imgPath = (gambarProperti !== 'default.jpg') 
+                                        ? `${BASE_IMG_PROP}${gambarProperti}` 
+                                        : 'https://placehold.co/600x400?text=No+Image';
+
+                        const nilaiTagihan = parseFloat(kontrakInfo.total_nilai_kontrak) || parseFloat(p.jumlah_tagihan) || 0;
+                        const nilaiDibayar = parseFloat(p.jumlah_dibayar) || 0;
+                        const sisaUtang = nilaiTagihan - nilaiDibayar;
+                        const tglTempo = new Date(p.tanggal_jatuh_tempo).toLocaleDateString('id-ID');
+
+                        const safeData = encodeURIComponent(JSON.stringify(p));
+
+                        // [FIX UI/UX LOCK BUTTON]: Menambahkan logika kondisional untuk tombol tenant
+                        return `
+                        <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-6 flex flex-col gap-4 group relative transition-all hover:shadow-md animate-fade-in">
+                            
+                            <div class="flex items-center gap-4 border-b border-slate-100 pb-4">
+                                <img src="${imgPath}" class="w-16 h-16 rounded-2xl object-cover shadow-inner shrink-0" alt="${namaProperti}">
+                                <div class="overflow-hidden">
+                                    <h4 class="text-lg font-black text-slate-800 uppercase tracking-tight truncate">${namaProperti}</h4>
+                                    <p class="text-[10px] text-emerald-500 font-black uppercase tracking-widest mt-0.5">${kodeProperti}</p>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-between items-center">
+                                <span class="px-3 py-1 bg-slate-50 border border-slate-200 text-slate-500 rounded-lg text-[9px] font-black uppercase tracking-widest">
+                                    ID Kontrak #${p.id_kontrak}
+                                </span>
+                                <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${statusClass}">
+                                    ${p.status_bayar}
+                                </span>
+                            </div>
+
+                            <div class="space-y-2 py-2 flex-1">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Penyewa</span>
+                                    <span class="font-bold text-slate-700 capitalize max-w-[150px] text-right truncate">${namaTenant}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Jatuh Tempo</span>
+                                    <span class="font-bold text-slate-600 text-right">${tglTempo}</span>
+                                </div>
+                                <div class="border-t border-dashed border-slate-200 my-2 pt-2 flex justify-between items-center text-xs">
+                                    <span class="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Total Tagihan</span>
+                                    <span class="font-bold text-slate-700 text-right">Rp ${nilaiTagihan.toLocaleString('id-ID')}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Telah Dibayar</span>
+                                    <span class="font-black text-emerald-500 text-right">Rp ${nilaiDibayar.toLocaleString('id-ID')}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-xs bg-slate-50 p-2 rounded-lg mt-1">
+                                    <span class="text-slate-500 font-black uppercase tracking-wider text-[9px]">Sisa Utang</span>
+                                    <span class="font-black ${sisaUtang > 0 ? 'text-rose-500' : 'text-slate-400'} text-right">Rp ${sisaUtang.toLocaleString('id-ID')}</span>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2 mt-2 pt-4 border-t border-slate-100 print:hidden">
+                                
+                                <button onclick="cetakInvoice(JSON.parse(decodeURIComponent('${safeData}')))" class="col-span-2 py-3 bg-slate-800 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-900 transition active:scale-95 shadow-sm mb-1 flex justify-center items-center gap-1.5">
+                                    <i class="ph-bold ph-printer text-sm"></i> Cetak Tagihan
+                                </button>
+
+                                ${p.bukti_bayar ? 
+                                    `<a href="${PAY_IMG_URL}${p.bukti_bayar}" target="_blank" class="flex items-center justify-center gap-1.5 py-3 border border-slate-200 bg-white text-slate-600 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-50 transition active:scale-95 col-span-2 shadow-sm">
+                                        <i class="ph-bold ph-file-image text-sm"></i> Lihat Bukti Tf
+                                    </a>` : 
+                                    `<button disabled class="py-3 bg-slate-50 text-slate-300 rounded-xl font-bold text-[10px] uppercase tracking-widest cursor-not-allowed col-span-2 border border-slate-100">Belum Ada Bukti</button>`
+                                }
+
+                                ${ROLE === 'tenant' ? 
+                                    (p.status_bayar === 'menunggu' && !p.bukti_bayar ? 
+                                        `<button onclick="openUpload(${p.id_pembayaran})" class="col-span-2 py-3 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition active:scale-95 shadow-sm mt-1 flex justify-center items-center gap-1.5">
+                                            <i class="ph-bold ph-upload-simple text-sm"></i> Upload Bukti
+                                        </button>` 
+                                    : p.status_bayar === 'menunggu' && p.bukti_bayar ? 
+                                        `<button disabled class="col-span-2 py-3 bg-amber-50 text-amber-500 border border-amber-100 rounded-xl text-[10px] font-black uppercase tracking-widest cursor-not-allowed shadow-sm mt-1 flex justify-center items-center gap-1.5">
+                                            <i class="ph-bold ph-lock text-sm"></i> Menunggu Verifikasi
+                                        </button>`
+                                    : p.status_bayar === 'ditolak' ? 
+                                        `<button onclick="openUpload(${p.id_pembayaran})" class="col-span-2 py-3 bg-rose-50 text-rose-600 border border-rose-100 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-500 hover:text-white transition active:scale-95 shadow-sm mt-1 flex justify-center items-center gap-1.5">
+                                            <i class="ph-bold ph-upload-simple text-sm"></i> Upload Ulang
+                                        </button>` 
+                                    : '') 
+                                : ''}
+
+                                ${ROLE !== 'tenant' ? 
+                                    `<button onclick="editData(JSON.parse(decodeURIComponent('${safeData}')))" class="col-span-1 border-2 border-blue-600 text-blue-600 py-3 rounded-xl font-bold text-xs hover:bg-blue-50 transition uppercase tracking-widest flex items-center justify-center gap-1 active:scale-95 mt-1">
+                                        <i class="ph-bold ph-pencil-simple text-sm"></i> Edit
+                                    </button>
+                                     <button onclick="hapusData(${p.id_pembayaran})" class="col-span-1 border-2 border-red-500 text-red-500 py-3 rounded-xl font-bold text-xs hover:bg-red-50 transition uppercase tracking-widest flex items-center justify-center gap-1 active:scale-95 mt-1 ${ROLE !== 'manager' ? 'hidden' : ''}">
+                                        <i class="ph-bold ph-trash text-sm"></i> Hapus
+                                    </button>` : ''
+                                }
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
+            } catch (e) { console.error("Gagal Render Data", e); }
+        }
+
+        // Auto-fill nominal tagihan berdasarkan ID kontrak yang dipilih
+        document.getElementById('pay-kontrak').addEventListener('change', function() {
+            const selectedOpt = this.options[this.selectedIndex];
+            if(selectedOpt && selectedOpt.value !== "") {
+                const tagihan = Math.round(parseFloat(selectedOpt.getAttribute('data-tagihan')) || 0);
+                document.getElementById('pay-tagihan').value = tagihan;
+                document.getElementById('pay-tagihan-display').value = "Rp " + tagihan.toLocaleString('id-ID');
+            } else {
+                document.getElementById('pay-tagihan').value = "";
+                document.getElementById('pay-tagihan-display').value = "";
+            }
+        });
+
+        // ==========================================
+        // FITUR AUTO-SYNC & AUTO-FORMAT RUPIAH
+        // ==========================================
+        
+        // [FIX AUTO-FORMAT RUPIAH]: Fungsi untuk merapikan ketikan angka jadi Rupiah
+        function formatRupiahInput(displayInputId, hiddenInputId) {
+            const displayInput = document.getElementById(displayInputId);
+            const hiddenInput = document.getElementById(hiddenInputId);
+            
+            displayInput.addEventListener('input', function(e) {
+                // Hapus semua karakter selain angka
+                let rawValue = this.value.replace(/[^0-9]/g, '');
+                
+                if (rawValue === "") {
+                    this.value = "";
+                    hiddenInput.value = "";
+                    return;
+                }
+                
+                // Simpan angka murni ke hidden input
+                hiddenInput.value = rawValue;
+                
+                // Format jadi ribuan untuk ditampilkan
+                this.value = parseInt(rawValue).toLocaleString('id-ID');
+            });
+        }
+
+        formatRupiahInput('pay-dibayar-display', 'pay-dibayar');
+
+        document.getElementById('pay-status').addEventListener('change', function() {
+            const dibayarInput = document.getElementById('pay-dibayar');
+            const dibayarDisplay = document.getElementById('pay-dibayar-display');
+            const tagihanValue = document.getElementById('pay-tagihan').value;
+            
+            if (this.value === 'terverifikasi') {
+                if (!dibayarInput.value || parseFloat(dibayarInput.value) === 0) {
+                    dibayarInput.value = tagihanValue;
+                    dibayarDisplay.value = parseInt(tagihanValue).toLocaleString('id-ID');
+                }
+            } else if (this.value === 'ditolak' || this.value === 'menunggu') {
+                dibayarInput.value = 0;
+                dibayarDisplay.value = "0";
+            }
+        });
+
+        // HANDLER: INPUT / VERIFIKASI (ADMIN/MANAGER)
+        document.getElementById('formPayment').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('pay-id').value;
+            
+            let valStatus = document.getElementById('pay-status').value;
+            let valDibayar = parseFloat(document.getElementById('pay-dibayar').value) || 0;
+            let valTagihan = parseFloat(document.getElementById('pay-tagihan').value) || 0;
+
+            if (valStatus === 'terverifikasi' && valDibayar === 0) {
+                valDibayar = valTagihan; 
+            } else if (valStatus === 'ditolak') {
+                valDibayar = 0; 
+            }
+
+            const data = {
+                id_kontrak: parseInt(document.getElementById('pay-kontrak').value),
+                tanggal_jatuh_tempo: document.getElementById('pay-tempo').value,
+                jumlah_tagihan: valTagihan,
+                jumlah_dibayar: valDibayar,
+                status_bayar: valStatus,
+                catatan: document.getElementById('pay-catatan').value
+            };
+
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API_URL}/${id}` : API_URL;
+
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` },
+                    body: JSON.stringify(data)
+                });
+                const resJson = await res.json();
+                if (resJson.success) { 
+                    alert("Data pembayaran sukses diverifikasi.");
+                    closeModal(); loadData(); 
+                } else {
+                    alert("Gagal: " + resJson.message);
+                }
+            } catch(e) { alert("Error Server"); }
+        };
+
+        // HANDLER: UPLOAD BUKTI (TENANT)
+        document.getElementById('formUpload').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('upload-pay-id').value;
+            const fileInput = document.getElementById('upload-file');
+            
+            const formData = new FormData();
+            formData.append('bukti_transfer', fileInput.files[0]);
+
+            try {
+                const res = await fetch(`${API_URL}/upload-bukti/${id}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${TOKEN}` },
+                    body: formData
+                });
+                const resJson = await res.json();
+                if (resJson.success) { 
+                    alert("Bukti transfer berhasil dikirim!");
+                    closeUpload(); loadData(); 
+                } else {
+                    alert("Gagal: " + resJson.message);
+                }
+            } catch(e) { alert("Error Jaringan Upload"); }
+        };
+
+        async function hapusData(id) {
+            if (confirm("Hapus record mutasi ini secara permanen?")) {
+                try {
+                    await fetch(`${API_URL}/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${TOKEN}` } });
+                    loadData();
+                } catch(e) { alert("Gagal menghapus"); }
+            }
+        }
+
+        function openModal() { 
+            document.getElementById('modal-payment').classList.remove('hidden'); 
+            document.getElementById('formPayment').reset(); 
+            document.getElementById('pay-id').value = "";
+            document.getElementById('manager-only-fields').classList.remove('hidden');
+            
+            // Bersihkan format display
+            document.getElementById('pay-tagihan-display').value = "";
+            document.getElementById('pay-dibayar-display').value = "";
+            document.getElementById('pay-tagihan').value = "";
+            document.getElementById('pay-dibayar').value = "";
+        }
+
+        function editData(p) {
+            document.getElementById('modal-payment').classList.remove('hidden');
+            document.getElementById('manager-only-fields').classList.add('hidden'); 
+            
+            document.getElementById('pay-id').value = p.id_pembayaran;
+            document.getElementById('pay-kontrak').value = p.id_kontrak;
+            
+            // [FIX TIMEZONE TANGGAL MUNDUR]
+            const formatLocalYYYYMMDD = (dateString) => {
+                const d = new Date(dateString);
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+            document.getElementById('pay-tempo').value = formatLocalYYYYMMDD(p.tanggal_jatuh_tempo);
+            
+            // [FIX UI/UX RUPIAH]: Masukkan nilai ke input murni dan input display
+            const rawTagihan = Math.round(parseFloat(p.jumlah_tagihan) || 0);
+            const rawDibayar = Math.round(parseFloat(p.jumlah_dibayar) || 0);
+            
+            document.getElementById('pay-tagihan').value = rawTagihan;
+            document.getElementById('pay-tagihan-display').value = "Rp " + rawTagihan.toLocaleString('id-ID');
+            
+            document.getElementById('pay-dibayar').value = rawDibayar;
+            document.getElementById('pay-dibayar-display').value = rawDibayar === 0 ? "" : rawDibayar.toLocaleString('id-ID');
+            
+            document.getElementById('pay-status').value = p.status_bayar;
+            document.getElementById('pay-catatan').value = p.catatan || "";
+        }
+
+        function openUpload(id) {
+            document.getElementById('upload-pay-id').value = id;
+            document.getElementById('file-name-display').innerText = "Klik untuk pilih gambar";
+            document.getElementById('file-name-display').classList.remove('text-emerald-500');
+            document.getElementById('upload-file').value = "";
+            document.getElementById('modal-upload').classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('modal-payment').classList.add('hidden'); }
+        function closeUpload() { document.getElementById('modal-upload').classList.add('hidden'); }
+        
+        // ==========================================
+        // FUNGSI KHUSUS CETAK INVOICE DINAMIS
+        // ==========================================
+        function cetakInvoice(p) {
+            // 1. Dapatkan info properti dan tenant dari cache
+            const kontrakInfo = window.kontrakCacheMap[p.id_kontrak] || {};
+            const namaTenant = kontrakInfo.nama_tenant || 'TIDAK DIKETAHUI';
+            const namaProperti = p.nama_properti || kontrakInfo.nama_properti || 'Unit Properti';
+            const kodeProperti = p.kode_properti || kontrakInfo.kode_properti || '#--';
+            
+            // 2. Isi Data Header
+            document.getElementById('print-no-inv').innerText = `INV-${new Date().getFullYear()}${String(new Date().getMonth()+1).padStart(2,'0')}-${String(p.id_pembayaran).padStart(4, '0')}`;
+            document.getElementById('print-tgl').innerText = new Date().toLocaleDateString('id-ID');
+            
+            // 3. Isi Data Pihak Terlibat
+            document.getElementById('print-nama-tenant').innerText = namaTenant;
+            document.getElementById('print-telp-tenant').innerText = "Kontrak ID: #" + p.id_kontrak;
+            document.getElementById('print-nama-prop').innerText = namaProperti;
+            document.getElementById('print-tipe-prop').innerText = "Properti Sewa";
+            document.getElementById('print-kode-prop').innerText = "KODE: " + kodeProperti;
+            
+            // 4. Isi Tabel Tagihan
+            document.getElementById('print-periode').innerText = "Jatuh Tempo:\n" + new Date(p.tanggal_jatuh_tempo).toLocaleDateString('id-ID');
+            
+            const nilaiTagihan = parseFloat(p.jumlah_tagihan) || parseFloat(kontrakInfo.total_nilai_kontrak) || 0;
+            const formatRupiah = "Rp " + nilaiTagihan.toLocaleString('id-ID');
+            
+            document.getElementById('print-nominal').innerText = formatRupiah;
+            document.getElementById('print-total-final').innerText = formatRupiah;
+            
+            // 5. Atur Badge Status
+            const badge = document.getElementById('print-status-badge');
+            if (p.status_bayar === 'terverifikasi') {
+                badge.innerText = "LUNAS / TERVERIFIKASI";
+                badge.className = "inline-block border-2 border-emerald-500 text-emerald-600 bg-emerald-50 px-6 py-2 rounded-xl font-black uppercase tracking-widest text-sm";
+            } else if (p.status_bayar === 'ditolak') {
+                badge.innerText = "PEMBAYARAN DITOLAK";
+                badge.className = "inline-block border-2 border-rose-500 text-rose-600 bg-rose-50 px-6 py-2 rounded-xl font-black uppercase tracking-widest text-sm";
+            } else {
+                badge.innerText = "BELUM LUNAS / MENUNGGU";
+                badge.className = "inline-block border-2 border-amber-500 text-amber-600 bg-amber-50 px-6 py-2 rounded-xl font-black uppercase tracking-widest text-sm";
+            }
+            
+            
+            // 7. Panggil Fitur Print Browser!
+            setTimeout(() => {
+                window.print();
+            }, 300); // Beri jeda sedikit agar DOM selesai dirender
+        }
+
+        loadData();
+    </script>
+</body>
+</html>

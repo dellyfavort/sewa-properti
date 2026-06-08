@@ -1,0 +1,14 @@
+/* frontend/css/components.css */
+
+/* State Aktif untuk Tombol Kategori Filter */
+.category-btn.active {
+    background-color: #1e50ff !important;
+    color: white !important;
+    border-color: #1e50ff !important;
+    box-shadow: 0 4px 14px 0 rgba(30, 80, 255, 0.2);
+}
+
+/* Efek transisi standar untuk tombol interaktif */
+button, a {
+    transition: all 0.2s ease-in-out;
+}

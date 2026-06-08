@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sewa Properti | Manajemen Tenant</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+
+    <script src="js/views.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { primary: '#6366f1', dark: '#1e1b4b' } } }
+        }
+    </script>
+</head>
+<body class="flex h-screen bg-[#f8fafc] overflow-hidden font-sans relative text-slate-800">
+
+    <aside class="w-72 bg-white border-r border-slate-200 flex-col hidden lg:flex z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] shrink-0">
+        <div class="h-20 flex items-center px-8 border-b border-slate-100 cursor-pointer" onclick="window.location.href='index.html'">
+            <div class="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-indigo-200">
+                <i class="ph-fill ph-users-three text-white text-xl"></i>
+            </div>
+            <h1 class="font-black text-xl tracking-tight text-slate-800 uppercase">Core<span class="text-indigo-600">Tenant</span></h1>
+        </div>
+        
+        <div class="px-6 py-8 flex-1 overflow-y-auto">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">Menu Utama</p>
+            <nav id="sidebar-menu" class="flex flex-col gap-1.5">
+                </nav>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative">
+        
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 lg:px-10 z-30 sticky top-0 shrink-0">
+            <div class="flex items-center gap-4">
+                <div class="lg:hidden w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+                    <i class="ph-fill ph-users-three text-white text-sm"></i>
+                </div>
+                <h2 id="page-title" class="text-xl font-black text-slate-800 tracking-tighter hidden md:block">
+                    </h2>
+            </div>
+            
+            <div class="flex items-center gap-4 sm:gap-6">
+                
+                <button onclick="window.openProfileModal()" class="flex items-center gap-3 text-left hover:bg-slate-50 p-2 rounded-2xl transition active:scale-95 border border-transparent hover:border-slate-100">
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-xl flex items-center justify-center font-black text-lg shadow-md" id="header-initial">
+                        -
+                    </div>
+                    <div class="hidden md:block">
+                        <p class="text-sm font-bold text-slate-800 truncate max-w-[120px] capitalize" id="header-name">Memuat...</p>
+                        <p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest" id="header-role">Role</p>
+                    </div>
+                    <i class="ph-bold ph-caret-down text-slate-400 hidden sm:block"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-[#f8fafc] p-6 lg:p-10 scroll-smooth relative">
+            <div class="max-w-6xl mx-auto space-y-8">
+                
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 id="main-title" class="text-2xl font-black text-slate-800 tracking-tighter">Data <span class="text-indigo-600">Penyewa</span></h2>
+                        <p class="text-slate-500 font-medium mt-1 text-sm flex items-center gap-2">
+                    </div>
+                    
+                    <button id="btn-tambah" onclick="openModal()" class="hidden bg-indigo-600 text-white px-6 py-4 rounded-2xl font-bold text-sm hover:bg-indigo-700 shadow-xl shadow-indigo-200 transition-all items-center justify-center gap-2 active:scale-95 shrink-0">
+                        <i class="ph-bold ph-user-plus text-lg"></i> <span>TAMBAH PENYEWA BARU</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-indigo-50 p-6 rounded-[2rem] border border-indigo-100 flex items-center gap-4">
+                        <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-indigo-200">
+                            <i class="ph-bold ph-shield-check text-white text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Status Keamanan</p>
+                            <p class="text-sm font-bold text-indigo-900 leading-tight mt-0.5">Data Otomatis Terkunci Setelah Verifikasi Admin</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-[2rem] border border-slate-200 md:col-span-2 flex items-center gap-4 shadow-sm">
+                        <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center shrink-0">
+                            <i class="ph-bold ph-clock-counter-clockwise text-slate-400 text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pemberitahuan</p>
+                            <p id="activity-msg" class="text-sm font-bold text-slate-600 leading-tight mt-0.5">Pastikan Alamat Domisili sesuai dengan KTP untuk mempercepat proses verifikasi manual oleh Admin.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-max">
+                            <thead>
+                                <tr class="bg-slate-50/50 border-b border-slate-100">
+                                    <th class="p-6 text-[11px] font-black text-slate-400 uppercase tracking-widest text-center">Kode</th>
+                                    <th class="p-6 text-[11px] font-black text-slate-400 uppercase tracking-widest">Nama Lengkap</th>
+                                    <th class="p-6 text-[11px] font-black text-slate-400 uppercase tracking-widest">No. KTP</th>
+                                    <th class="p-6 text-[11px] font-black text-slate-400 uppercase tracking-widest">Telepon</th>
+                                    <th class="p-6 text-[11px] font-black text-slate-400 uppercase tracking-widest text-center">Verifikasi</th>
+                                    <th class="p-6 text-[11px] font-black text-slate-400 uppercase tracking-widest text-center">Kelola</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tenant-table-body" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="modal-profile" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[70] items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 max-h-[95vh] overflow-y-auto">
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 text-center relative">
+                <button onclick="window.closeProfileModal()" class="absolute top-4 right-4 text-white/70 hover:text-white transition">
+                    <i class="ph ph-x-circle text-3xl"></i>
+                </button>
+                <div class="w-20 h-20 bg-white/20 backdrop-blur-md text-white rounded-2xl flex items-center justify-center font-black text-4xl mx-auto mb-4 border border-white/30 shadow-inner" id="modal-prof-initial">
+                    -
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter capitalize" id="modal-prof-name">Nama</h3>
+                <p class="text-blue-100 text-xs font-bold uppercase tracking-widest mt-1" id="modal-prof-role">Role Account</p>
+                <div id="badge-verifikasi" class="hidden"></div>
+            </div>
+            <form id="form-update-profil" class="p-8 space-y-4" onsubmit="window.submitUpdateProfile(event)">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label id="label-prof-nama" class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">Nama Lengkap</label>
+                        <div class="relative">
+                            <i class="ph-bold ph-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="prof-nama" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700 transition">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">No. Telepon</label>
+                        <div class="relative">
+                            <i class="ph-bold ph-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="prof-telepon" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700 transition">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">Email (Akun Login Tetap)</label>
+                    <div class="relative">
+                        <i class="ph-bold ph-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="email" id="prof-email" readonly class="w-full pl-11 pr-4 py-3 bg-slate-100 border border-slate-200 rounded-xl outline-none text-slate-500 font-bold cursor-not-allowed">
+                    </div>
+                </div>
+                <div id="wrap-prof-alamat">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">Alamat Domisili Lengkap</label>
+                    <div class="relative">
+                        <i class="ph-bold ph-map-pin absolute left-4 top-4 text-slate-400"></i>
+                        <textarea id="prof-alamat" rows="3" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700 transition resize-none"></textarea>
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-slate-100 flex gap-3">
+                    <button type="button" onclick="State.clearAuth()" class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition active:scale-95 shadow-sm border border-red-100 hover:border-red-500" title="Logout">
+                        <i class="ph-bold ph-power text-xl"></i>
+                    </button>
+                    <button type="submit" id="btn-submit-profil" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-blue-700 transition active:scale-95 shadow-lg shadow-blue-200 flex justify-center items-center gap-2">
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-tenant" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-xl rounded-[2.5rem] shadow-2xl p-8 md:p-10 border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-start mb-8">
+                <div>
+                    <h3 id="modal-title" class="text-2xl font-black text-slate-800 tracking-tighter uppercase">Profil Penyewa</h3>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Lengkapi data untuk verifikasi manual</p>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 transition"><i class="ph-fill ph-x-circle text-3xl"></i></button>
+            </div>
+
+            <form id="formTenant" class="space-y-4">
+                <input type="hidden" id="ten-id">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div id="field-id-auto">
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">ID Sistem</label>
+                        <input type="text" id="ten-id-display" readonly class="w-full p-3.5 bg-slate-100 text-slate-500 font-mono border border-slate-200 rounded-xl outline-none cursor-not-allowed text-center">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Kode Penyewa</label>
+                        <input type="text" id="ten-kode" readonly class="w-full p-3.5 bg-slate-100 text-slate-500 font-mono border border-slate-200 rounded-xl outline-none cursor-not-allowed text-center">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Nama Lengkap (Sesuai KTP)</label>
+                    <input type="text" id="ten-nama" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-600 transition-all font-bold text-slate-800">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Nomor NIK (16 Digit)</label>
+                        <input type="text" id="ten-ktp" required maxlength="16" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-600 transition-all font-bold text-slate-800 text-center">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Telepon / WA</label>
+                        <input type="text" id="ten-telp" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-indigo-600 transition-all font-bold text-slate-800 text-center">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Alamat Domisili Lengkap</label>
+                    <textarea id="ten-alamat" required placeholder="Contoh: Jl. Merdeka No. 123..." class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none h-24 focus:border-indigo-600 transition-all font-medium leading-relaxed resize-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Status Verifikasi</label>
+                    <select id="ten-status" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-black text-xs uppercase tracking-widest outline-none focus:border-indigo-600 transition-all">
+                        <option value="pending">PENDING (Dalam Review)</option>
+                        <option value="verified">VERIFIED (Disetujui)</option>
+                        <option value="rejected">REJECTED (Ditolak)</option>
+                    </select>
+                </div>
+
+                <div id="tenant-lock-msg" class="hidden p-4 bg-amber-50 border border-amber-200 rounded-xl mt-4">
+                    <p class="text-[10px] font-bold text-amber-700 leading-tight">⚠️ Profil Anda telah diverifikasi. Hubungi Admin jika ingin melakukan perubahan data kembali.</p>
+                </div>
+
+                <button id="btn-save" type="submit" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-black uppercase tracking-widest mt-6 hover:bg-indigo-700 transition active:scale-95 shadow-lg shadow-indigo-200">
+                    Simpan & Ajukan Verifikasi
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 1. INISIALISASI STATE GLOBAL (DIBUTUHKAN OLEH views.js)
+        window.State = {
+            user: {
+                token: localStorage.getItem('token'),
+                role: localStorage.getItem('role') || 'admin',
+                nama: localStorage.getItem('nama'),
+                email: localStorage.getItem('email'),
+                telepon: localStorage.getItem('telepon'),
+                telepon_pengelola: localStorage.getItem('telepon_pengelola'),
+                alamat_domisili: localStorage.getItem('alamat_domisili'),
+                status_verifikasi: localStorage.getItem('status_verifikasi')
+            },
+            clearAuth: () => {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            },
+            syncProfile: () => {
+                localStorage.setItem('nama', State.user.nama || '');
+                localStorage.setItem('telepon', State.user.telepon || State.user.telepon_pengelola || '');
+                localStorage.setItem('alamat_domisili', State.user.alamat_domisili || '');
+                window.location.reload(); 
+            }
+        };
+
+        const TOKEN = State.user.token;
+        const ROLE = State.user.role;
+        
+        if (!TOKEN) window.location.href = 'index.html';
+
+        // 2. RENDER HEADER & SIDEBAR DINAMIS
+        let rawName = State.user.nama;
+        if (!rawName && State.user.email) {
+            rawName = State.user.email.split('@')[0];
+        }
+        const userName = rawName || ROLE;
+        const initial = userName.charAt(0).toUpperCase();
+
+        document.getElementById('header-name').innerText = userName;
+        document.getElementById('header-role').innerText = ROLE;
+        document.getElementById('header-initial').innerText = initial;
+        
+        // Render ke Modal Profil
+        document.getElementById('modal-prof-name').innerText = userName;
+        document.getElementById('modal-prof-role').innerText = ROLE + " Account";
+        document.getElementById('modal-prof-initial').innerText = initial;
+
+        const menuContainer = document.getElementById('sidebar-menu');
+        const pageTitle = document.getElementById('page-title');
+        const mainTitle = document.getElementById('main-title');
+
+        if (ROLE === 'manager' || ROLE === 'admin') {
+            menuContainer.innerHTML = `
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-squares-four text-xl"></i><span>Dashboard</span>
+                </a>
+                <a href="properti.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-house-line text-xl"></i><span>Manajemen Unit</span>
+                </a>
+                <a href="tenant.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 bg-indigo-50 text-indigo-600 shadow-sm border border-indigo-100">
+                    <i class="ph-bold ph-users-three text-xl"></i><span>Data Penyewa</span>
+                </a>
+                <a href="kontrak.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-file-text text-xl"></i><span>Kontrak Sewa</span>
+                </a>
+                <a href="pembayaran.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-credit-card text-xl"></i><span>Keuangan</span>
+                </a>
+            `;
+            pageTitle.innerHTML = `Data <span class="text-indigo-600">Penyewa</span> `;
+        } else if (ROLE === 'tenant') {
+            menuContainer.innerHTML = `
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-squares-four text-xl"></i><span>Dashboard</span>
+                </a>
+                <a href="properti.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-storefront text-xl"></i><span>Katalog Property</span>
+                </a>
+                <a href="kontrak.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-file-text text-xl"></i><span>Kontrak Saya</span>
+                </a>
+                <a href="pembayaran.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-receipt text-xl"></i><span>Tagihan & Bayar</span>
+                </a>
+            `;
+            // Khusus tenant, halaman tenant.html sebenarnya digunakan untuk verifikasi jika belum lengkap, 
+            // Namun secara default views.js sudah punya modal profil. Kita tetap sediakan halamannya.
+            pageTitle.innerHTML = `Profil <span class="text-indigo-600">Saya</span> 👤`;
+        }
+
+        // ==========================================
+        // 3. LOGIKA API & CRUD TENANT (ASLI DARI KODEMU)
+        // ==========================================
+        const API_URL = 'http://127.0.0.1:3000/api/tenant';
+
+        // Inisialisasi tampilan berdasarkan role (Fungsi Asli)
+        function initRoleUI() {
+            if (ROLE === 'tenant') {
+                mainTitle.innerHTML = `Profil <span class="text-indigo-600">Saya</span>`;
+                document.getElementById('btn-tambah').classList.add('hidden');
+                document.getElementById('field-id-auto').classList.add('hidden');
+                
+                // Kunci status verifikasi agar tidak bisa diubah tenant sendiri
+                const statusField = document.getElementById('ten-status');
+                statusField.disabled = true;
+                statusField.classList.add('bg-slate-100', 'cursor-not-allowed', 'opacity-60');
+            } else {
+                document.getElementById('btn-tambah').classList.remove('hidden');
+            }
+        }
+
+        async function loadData() {
+            const tbody = document.getElementById('tenant-table-body');
+            try {
+                const res = await fetch(API_URL, { headers: { 'Authorization': `Bearer ${TOKEN}` } });
+                const result = await res.json();
+                
+                if (result.success) {
+                    tbody.innerHTML = result.data.map(t => {
+                        const verifStatus = t.status_verifikasi || 'pending';
+                        const statusWarna = verifStatus === 'verified' ? 'bg-emerald-100 text-emerald-600' : 
+                                            verifStatus === 'pending' ? 'bg-amber-100 text-amber-600' : 'bg-rose-100 text-rose-600';
+                        
+                        const isVerified = verifStatus === 'verified';
+                        const isTenant = ROLE === 'tenant';
+
+                        return `
+                            <tr class="hover:bg-slate-50 transition border-b border-slate-50/50">
+                                <td class="p-6 font-bold text-indigo-600 text-xs text-center">${t.kode_tenant || 'NEW'}</td>
+                                <td class="p-6">
+                                    <p class="font-black text-slate-800 text-sm uppercase">${t.nama_lengkap || '-'}</p>
+                                    <p class="text-[10px] text-slate-400 font-medium mt-0.5 truncate max-w-[200px]">${t.alamat_domisili || 'Alamat belum diisi'}</p>
+                                </td>
+                                <td class="p-6 text-slate-500 font-mono text-xs">${t.no_ktp || '-'}</td>
+                                <td class="p-6 text-slate-500 font-medium text-sm">${t.telepon || '-'}</td>
+                                <td class="p-6 text-center">
+                                    <span class="px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${statusWarna}">${verifStatus}</span>
+                                </td>
+                                <td class="p-6 text-center whitespace-nowrap">
+                                    <div class="flex justify-center gap-2">
+                                        ${isVerified && isTenant ? `
+                                            <div class="w-10 h-10 bg-slate-100 text-slate-300 rounded-xl inline-flex items-center justify-center cursor-not-allowed" title="Data Terkunci">
+                                                <i class="ph-bold ph-lock-key text-lg"></i>
+                                            </div>
+                                        ` : `
+                                            <button onclick='editData(${JSON.stringify(t)})' title="Edit / Lengkapi" class="w-10 h-10 bg-slate-50 text-indigo-500 rounded-xl hover:bg-indigo-600 hover:text-white transition shadow-sm inline-flex items-center justify-center">
+                                                <i class="ph-bold ph-pencil-simple text-lg"></i>
+                                            </button>
+                                        `}
+                                        
+                                        ${ROLE === 'manager' ? `
+                                            <button onclick="hapusData(${t.id_tenant})" title="Hapus" class="w-10 h-10 bg-slate-50 text-red-500 rounded-xl hover:bg-red-600 hover:text-white transition shadow-sm inline-flex items-center justify-center">
+                                                <i class="ph-bold ph-trash text-lg"></i>
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
+            } catch (e) { 
+                console.error("Gagal memuat data", e);
+                tbody.innerHTML = `<tr><td colspan="6" class="p-10 text-center text-slate-400 font-bold italic">Koneksi API terputus atau database tidak merespon.</td></tr>`;
+            }
+        }
+
+        document.getElementById('formTenant').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('ten-id').value;
+            
+            // Payload data mencakup Alamat Domisili
+            const data = {
+                nama_tenant: document.getElementById('ten-nama').value,
+                no_ktp: document.getElementById('ten-ktp').value,
+                telepon: document.getElementById('ten-telp').value,
+                alamat_domisili: document.getElementById('ten-alamat').value,
+                status_verifikasi: document.getElementById('ten-status').value 
+            };
+
+            try {
+                const res = await fetch(id ? `${API_URL}/${id}` : API_URL, {
+                    method: id ? 'PUT' : 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` },
+                    body: JSON.stringify(data)
+                });
+                const resData = await res.json();
+                if(resData.success) { 
+                    alert("Berhasil! Perubahan data Anda akan ditinjau oleh Admin.");
+                    closeModal(); 
+                    loadData(); 
+                }
+                else alert(resData.message);
+            } catch (error) { alert("Terjadi kesalahan teknis pada server."); }
+        };
+
+        async function hapusData(id) {
+            if (confirm("Hapus data penyewa ini? Tindakan ini tidak dapat dibatalkan.")) {
+                const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${TOKEN}` } });
+                const result = await res.json();
+                if(result.success) loadData();
+            }
+        }
+
+        function openModal() { 
+            document.getElementById('modal-tenant').classList.remove('hidden'); 
+            document.getElementById('formTenant').reset(); 
+            document.getElementById('ten-id').value = ""; 
+            document.getElementById('modal-title').innerText = "Daftarkan Penyewa Baru";
+            document.getElementById('btn-save').classList.remove('hidden');
+            document.getElementById('tenant-lock-msg').classList.add('hidden');
+        }
+        
+        function closeModal() { document.getElementById('modal-tenant').classList.add('hidden'); }
+        
+        function editData(t) {
+            // Logika Keamanan: Cegah Tenant mengedit jika status sudah VERIFIED
+            if (ROLE === 'tenant' && t.status_verifikasi === 'verified') {
+                alert("Data Anda sudah terverifikasi secara resmi. Silakan hubungi admin di kantor pengelola jika ingin melakukan perubahan alamat atau kontak.");
+                return;
+            }
+
+            openModal();
+            document.getElementById('modal-title').innerText = ROLE === 'tenant' ? "Lengkapi Profil Saya" : "Edit Profil Penyewa";
+            document.getElementById('ten-id-display').value = t.id_tenant;
+            document.getElementById('ten-id').value = t.id_tenant;
+            document.getElementById('ten-kode').value = t.kode_tenant || 'AUTO';
+            document.getElementById('ten-nama').value = t.nama_lengkap || '';
+            document.getElementById('ten-ktp').value = t.no_ktp || '';
+            document.getElementById('ten-telp').value = t.telepon || '';
+            document.getElementById('ten-alamat').value = (t.alamat_domisili && t.alamat_domisili !== '-') ? t.alamat_domisili : '';
+            document.getElementById('ten-status').value = t.status_verifikasi || 'pending';
+
+            // Beri peringatan lock jika admin mengedit data yang sudah verified
+            if (t.status_verifikasi === 'verified' && ROLE === 'tenant') {
+                document.getElementById('btn-save').classList.add('hidden');
+                document.getElementById('tenant-lock-msg').classList.remove('hidden');
+            }
+        }
+        
+        // Jalankan saat load
+        initRoleUI();
+        loadData();
+    </script>
+</body>
+</html>

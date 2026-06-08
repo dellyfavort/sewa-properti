@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog Properti | Core System</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+
+    <script src="js/views.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { primary: '#2563eb', dark: '#0f172a' } } }
+        }
+    </script>
+</head>
+<body class="flex h-screen bg-[#f8fafc] overflow-hidden font-sans relative text-slate-800">
+
+    <aside class="w-72 bg-white border-r border-slate-200 flex-col hidden lg:flex z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] shrink-0">
+        <div class="h-20 flex items-center px-8 border-b border-slate-100 cursor-pointer" onclick="window.location.href='index.html'">
+            <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-blue-200">
+                <i class="ph-fill ph-buildings text-white text-xl"></i>
+            </div>
+            <h1 class="font-black text-xl tracking-tight text-slate-800 uppercase">Core<span class="text-blue-600">Prop</span></h1>
+        </div>
+        
+        <div class="px-6 py-8 flex-1 overflow-y-auto">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">Menu Utama</p>
+            <nav id="sidebar-menu" class="flex flex-col gap-1.5">
+                </nav>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative">
+        
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 lg:px-10 z-30 sticky top-0 shrink-0">
+            <div class="flex items-center gap-4">
+                <div class="lg:hidden w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                    <i class="ph-fill ph-buildings text-white text-sm"></i>
+                </div>
+                <h2 id="page-title" class="text-xl font-black text-slate-800 tracking-tighter hidden md:block">
+                    </h2>
+            </div>
+            
+            <div class="flex items-center gap-4 sm:gap-6">
+                
+                <button onclick="window.openProfileModal()" class="flex items-center gap-3 text-left hover:bg-slate-50 p-2 rounded-2xl transition active:scale-95 border border-transparent hover:border-slate-100">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl flex items-center justify-center font-black text-lg shadow-md" id="header-initial">
+                        -
+                    </div>
+                    <div class="hidden md:block">
+                        <p class="text-sm font-bold text-slate-800 truncate max-w-[120px] capitalize" id="header-name">Memuat...</p>
+                        <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest" id="header-role">Role</p>
+                    </div>
+                    <i class="ph-bold ph-caret-down text-slate-400 hidden sm:block"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-[#f8fafc] p-6 lg:p-10 scroll-smooth relative">
+            <div class="max-w-6xl mx-auto space-y-8">
+                
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
+                    <div class="flex-1 space-y-4">
+                        <div class="relative w-full max-w-2xl">
+                            <i class="ph-bold ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
+                            <input type="text" id="search-input" placeholder="Cari nama properti atau alamat..." 
+                                class="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-blue-600/10 transition-all font-bold text-slate-700">
+                        </div>
+
+                        <div class="flex flex-wrap gap-2" id="filter-container">
+                            <button class="category-btn px-5 py-2.5 rounded-full border text-sm font-bold transition-all bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-200" data-category="all">Semua</button>
+                            <button class="category-btn px-5 py-2.5 rounded-full border text-sm font-bold transition-all bg-white text-slate-600 border-slate-200 hover:border-blue-600 hover:text-blue-600" data-category="rumah">Rumah</button>
+                            <button class="category-btn px-5 py-2.5 rounded-full border text-sm font-bold transition-all bg-white text-slate-600 border-slate-200 hover:border-blue-600 hover:text-blue-600" data-category="apartemen">Apartemen</button>
+                            <button class="category-btn px-5 py-2.5 rounded-full border text-sm font-bold transition-all bg-white text-slate-600 border-slate-200 hover:border-blue-600 hover:text-blue-600" data-category="ruko">Ruko</button>
+                            <button class="category-btn px-5 py-2.5 rounded-full border text-sm font-bold transition-all bg-white text-slate-600 border-slate-200 hover:border-blue-600 hover:text-blue-600" data-category="kantor">Kantor</button>
+                            <button class="category-btn px-5 py-2.5 rounded-full border text-sm font-bold transition-all bg-white text-slate-600 border-slate-200 hover:border-blue-600 hover:text-blue-600" data-category="gudang">Gudang</button>
+                        </div>
+                    </div>
+
+                    <button id="btn-tambah" onclick="openModal()" class="hidden bg-blue-600 text-white px-6 py-4 rounded-2xl font-bold text-sm hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all items-center justify-center gap-2 active:scale-95 shrink-0">
+                        <i class="ph-bold ph-plus text-lg"></i> <span>TAMBAH UNIT BARU</span>
+                    </button>
+                </div>
+
+                <div id="view-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+                <div id="empty-state" class="hidden flex flex-col items-center justify-center py-20 text-center bg-white rounded-[2rem] border border-slate-200 shadow-sm">
+                    <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                        <i class="ph-bold ph-magnifying-glass text-4xl text-slate-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 tracking-tight">Data tidak ditemukan</h3>
+                    <p class="text-slate-500 font-medium mt-1">Coba kata kunci atau kategori filter lainnya.</p>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="modal-profile" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[70] items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 max-h-[95vh] overflow-y-auto">
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 text-center relative">
+                <button onclick="window.closeProfileModal()" class="absolute top-4 right-4 text-white/70 hover:text-white transition">
+                    <i class="ph ph-x-circle text-3xl"></i>
+                </button>
+                <div class="w-20 h-20 bg-white/20 backdrop-blur-md text-white rounded-2xl flex items-center justify-center font-black text-4xl mx-auto mb-4 border border-white/30 shadow-inner" id="modal-prof-initial">
+                    -
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter capitalize" id="modal-prof-name">Nama</h3>
+                <p class="text-blue-100 text-xs font-bold uppercase tracking-widest mt-1" id="modal-prof-role">Role Account</p>
+                <div id="badge-verifikasi" class="hidden"></div>
+            </div>
+            <form id="form-update-profil" class="p-8 space-y-4" onsubmit="window.submitUpdateProfile(event)">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label id="label-prof-nama" class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">Nama Lengkap</label>
+                        <div class="relative">
+                            <i class="ph-bold ph-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="prof-nama" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700 transition">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">No. Telepon</label>
+                        <div class="relative">
+                            <i class="ph-bold ph-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="prof-telepon" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700 transition">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">Email (Akun Login Tetap)</label>
+                    <div class="relative">
+                        <i class="ph-bold ph-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="email" id="prof-email" readonly class="w-full pl-11 pr-4 py-3 bg-slate-100 border border-slate-200 rounded-xl outline-none text-slate-500 font-bold cursor-not-allowed">
+                    </div>
+                </div>
+                <div id="wrap-prof-alamat">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">Alamat Domisili Lengkap</label>
+                    <div class="relative">
+                        <i class="ph-bold ph-map-pin absolute left-4 top-4 text-slate-400"></i>
+                        <textarea id="prof-alamat" rows="3" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700 transition resize-none"></textarea>
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-slate-100 flex gap-3">
+                    <button type="button" onclick="State.clearAuth()" class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition active:scale-95 shadow-sm border border-red-100 hover:border-red-500" title="Logout">
+                        <i class="ph-bold ph-power text-xl"></i>
+                    </button>
+                    <button type="submit" id="btn-submit-profil" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-blue-700 transition active:scale-95 shadow-lg shadow-blue-200 flex justify-center items-center gap-2">
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-properti" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl p-10 border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-start mb-8">
+                <h3 id="modal-title" class="text-2xl font-black text-slate-800 uppercase tracking-tighter">Entry Data</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 transition"><i class="ph-fill ph-x-circle text-3xl"></i></button>
+            </div>
+            <form id="formProperti" class="space-y-4">
+                <input type="hidden" id="prop-id">
+                <div class="flex justify-center mb-4">
+                    <div id="image-preview-container" class="w-full h-48 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center overflow-hidden">
+                        <img id="img-preview" src="" class="hidden w-full h-full object-cover">
+                        <div id="preview-placeholder" class="text-slate-400 flex flex-col items-center">
+                            <i class="ph-fill ph-image text-4xl"></i>
+                            <p class="text-[10px] font-bold uppercase mt-2 tracking-widest">Belum ada gambar</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1.5">Unggah Gambar Unit</label>
+                    <input type="file" id="prop-gambar" accept="image/*" class="w-full p-2.5 text-xs bg-slate-50 rounded-xl border border-slate-200">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div id="field-id-auto">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1.5">ID Sistem</label>
+                        <input type="text" id="prop-id-display" readonly class="w-full p-3.5 bg-slate-100 border border-slate-100 rounded-xl outline-none font-mono text-slate-500 cursor-not-allowed text-center text-sm font-bold">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1.5">Kode Properti</label>
+                        <input type="text" id="prop-kode" name="kode_properti" readonly class="w-full p-3.5 bg-slate-100 border border-slate-200 rounded-xl outline-none text-center text-sm font-bold text-blue-600 cursor-not-allowed transition-all">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1.5">Tipe Properti</label>
+                        <select id="prop-tipe" name="tipe_properti" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none text-center text-sm font-bold focus:border-blue-600 transition-all">
+                            <option value="Rumah">Rumah</option>
+                            <option value="Apartemen">Apartemen</option>
+                            <option value="Ruko">Ruko</option>
+                            <option value="Kantor">Kantor</option>
+                            <option value="Gudang">Gudang</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1.5">Harga Sewa (Rp)</label>
+                        <input type="number" id="prop-harga" name="hargasewa_standar" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none text-center text-sm font-bold focus:border-blue-600 transition-all">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1.5">Nama Properti</label>
+                    <input type="text" id="prop-nama" name="nama_properti" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none text-center text-sm font-bold focus:border-blue-600 transition-all placeholder:font-medium placeholder:text-slate-300" placeholder="Cth: Cluster Anggrek Tahap 2">
+                </div>
+                
+                <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1.5">Alamat Lengkap</label>
+                    <textarea id="prop-alamat" name="alamat" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none h-20 text-center text-sm font-medium focus:border-blue-600 transition-all resize-none"></textarea>
+                </div>
+                
+                <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 block ml-1 mb-1.5">Status</label>
+                    <select id="prop-status" name="status_properti" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-black text-slate-800 outline-none text-center text-sm focus:border-blue-600 transition-all">
+                        <option value="tersedia">TERSEDIA</option>
+                        <option value="tersewa">TERSEWA</option>
+                        <option value="perbaikan">PERBAIKAN</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase tracking-widest mt-6 hover:bg-blue-700 transition shadow-lg shadow-blue-200">SIMPAN DATA</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-contact" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] shadow-2xl p-8 border border-slate-100">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="ph-fill ph-phone-call text-4xl"></i>
+                </div>
+                <h3 class="text-xl font-black text-slate-800 tracking-tight uppercase">Hubungi Admin</h3>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1 mb-4">Daftar Pengelola Aktif</p>
+                <div id="admin-list-container" class="space-y-3"></div>
+            </div>
+            <button onclick="closeContactModal()" class="w-full mt-2 py-3.5 text-xs font-black text-slate-400 hover:text-slate-600 transition text-center uppercase tracking-widest bg-slate-50 rounded-xl hover:bg-slate-100">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. INISIALISASI STATE GLOBAL (DIBUTUHKAN OLEH views.js)
+        window.State = {
+            user: {
+                token: localStorage.getItem('token'),
+                role: localStorage.getItem('role') || 'admin',
+                nama: localStorage.getItem('nama'),
+                email: localStorage.getItem('email'),
+                telepon: localStorage.getItem('telepon'),
+                telepon_pengelola: localStorage.getItem('telepon_pengelola'),
+                alamat_domisili: localStorage.getItem('alamat_domisili'),
+                status_verifikasi: localStorage.getItem('status_verifikasi')
+            },
+            clearAuth: () => {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            },
+            syncProfile: () => {
+                localStorage.setItem('nama', State.user.nama || '');
+                localStorage.setItem('telepon', State.user.telepon || State.user.telepon_pengelola || '');
+                localStorage.setItem('alamat_domisili', State.user.alamat_domisili || '');
+                window.location.reload(); 
+            }
+        };
+
+        const TOKEN = State.user.token;
+        const ROLE = State.user.role;
+        
+        if (!TOKEN) window.location.href = 'index.html';
+
+        // 2. RENDER HEADER & SIDEBAR DINAMIS
+        let rawName = State.user.nama;
+        if (!rawName && State.user.email) {
+            rawName = State.user.email.split('@')[0];
+        }
+        const userName = rawName || ROLE;
+        const initial = userName.charAt(0).toUpperCase();
+
+        document.getElementById('header-name').innerText = userName;
+        document.getElementById('header-role').innerText = ROLE;
+        document.getElementById('header-initial').innerText = initial;
+        
+        document.getElementById('modal-prof-name').innerText = userName;
+        document.getElementById('modal-prof-role').innerText = ROLE + " Account";
+        document.getElementById('modal-prof-initial').innerText = initial;
+
+        const menuContainer = document.getElementById('sidebar-menu');
+        const pageTitle = document.getElementById('page-title');
+
+        if (ROLE === 'manager' || ROLE === 'admin') {
+            menuContainer.innerHTML = `
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-squares-four text-xl"></i><span>Dashboard</span>
+                </a>
+                <a href="properti.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 bg-blue-50 text-blue-600 shadow-sm border border-blue-100">
+                    <i class="ph-bold ph-house-line text-xl"></i><span>Manajemen Unit</span>
+                </a>
+                <a href="tenant.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-users-three text-xl"></i><span>Data Penyewa</span>
+                </a>
+                <a href="kontrak.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-file-text text-xl"></i><span>Kontrak Sewa</span>
+                </a>
+                <a href="pembayaran.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-credit-card text-xl"></i><span>Keuangan</span>
+                </a>
+            `;
+            pageTitle.innerHTML = `Manajemen <span class="text-blue-600">Unit</span> `;
+            
+            document.getElementById('btn-tambah').classList.replace('hidden', 'flex');
+
+        } else if (ROLE === 'tenant') {
+            menuContainer.innerHTML = `
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-squares-four text-xl"></i><span>Dashboard</span>
+                </a>
+                <a href="properti.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 bg-blue-50 text-blue-600 shadow-sm border border-blue-100">
+                    <i class="ph-bold ph-storefront text-xl"></i><span>Katalog Property</span>
+                </a>
+                <a href="kontrak.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-file-text text-xl"></i><span>Kontrak Saya</span>
+                </a>
+                <a href="pembayaran.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-receipt text-xl"></i><span>Tagihan & Bayar</span>
+                </a>
+            `;
+            pageTitle.innerHTML = `Katalog <span class="text-blue-600">Properti</span> `;
+            
+            document.getElementById('field-id-auto').classList.add('hidden');
+        }
+
+        // ==========================================
+        // SCRIPT AUTO-GENERATE KODE PROPERTI 
+        // ==========================================
+        
+        function generateKodeProperti(tipe) {
+            const prefixMap = {
+                'Rumah': 'RMH',
+                'Apartemen': 'APT',
+                'Ruko': 'R',
+                'Kantor': 'OFC',
+                'Gudang': 'GDG'
+            };
+            const prefix = prefixMap[tipe] || 'PROP';
+            
+            const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+            return `${prefix}-${randomSuffix}`;
+        }
+
+        document.getElementById('prop-tipe').addEventListener('change', function() {
+            const idValue = document.getElementById('prop-id').value;
+            if (!idValue) {
+                const generatedKode = generateKodeProperti(this.value);
+                document.getElementById('prop-kode').value = generatedKode;
+            }
+        });
+
+
+        // ==========================================
+        // SCRIPT CRUD & API PROPERTI 
+        // ==========================================
+        const API_URL = 'http://127.0.0.1:3000/api/properti';
+        const BASE_IMG_URL = 'http://127.0.0.1:3000/uploads/';
+        const ADMIN_CONTACT_URL = 'http://127.0.0.1:3000/api/admin-contact';
+        
+        let masterData = []; 
+        let activeCategory = 'all';
+        let searchQuery = '';
+
+        async function loadData() {
+            try {
+                const res = await fetch(API_URL, { headers: { 'Authorization': `Bearer ${TOKEN}` } });
+                const result = await res.json();
+                if (result.success) { masterData = result.data; filterAndRender(); }
+            } catch (e) { console.error(e); }
+        }
+
+        // [FIX UI/UX]: Menambahkan manipulasi class Tailwind untuk state filter aktif
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Hapus state aktif dari semua tombol
+                document.querySelectorAll('.category-btn').forEach(b => {
+                    b.classList.remove('bg-blue-600', 'text-white', 'border-blue-600', 'shadow-md', 'shadow-blue-200');
+                    b.classList.add('bg-white', 'text-slate-600', 'border-slate-200', 'hover:border-blue-600', 'hover:text-blue-600');
+                });
+                
+                // Tambahkan state aktif ke tombol yang diklik
+                btn.classList.remove('bg-white', 'text-slate-600', 'border-slate-200', 'hover:border-blue-600', 'hover:text-blue-600');
+                btn.classList.add('bg-blue-600', 'text-white', 'border-blue-600', 'shadow-md', 'shadow-blue-200');
+                
+                activeCategory = btn.dataset.category; 
+                filterAndRender();
+            });
+        });
+
+        function filterAndRender() {
+            const filtered = masterData.filter(p => {
+                const matchesSearch = p.nama_properti.toLowerCase().includes(searchQuery) || 
+                                     p.alamat.toLowerCase().includes(searchQuery) ||
+                                     p.kode_properti.toLowerCase().includes(searchQuery);
+                const matchesCategory = activeCategory === 'all' || p.tipe_properti.toLowerCase() === activeCategory.toLowerCase();
+                return matchesSearch && matchesCategory;
+            });
+
+            if (filtered.length === 0) {
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('view-grid').innerHTML = "";
+            } else {
+                document.getElementById('empty-state').classList.add('hidden');
+                renderGrid(filtered); // Grid View Digunakan Secara Universal
+            }
+        }
+
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            searchQuery = e.target.value.toLowerCase(); filterAndRender();
+        });
+
+
+        // Fungsi Grid View Universal untuk semua level Role
+        function renderGrid(data) {
+            const container = document.getElementById('view-grid');
+            container.innerHTML = data.map(p => {
+                const imgPath = p.gambar_properti && p.gambar_properti !== 'default.jpg' 
+                                ? `${BASE_IMG_URL}${p.gambar_properti}` 
+                                : 'https://placehold.co/600x400?text=No+Image';
+                                
+                // Parsing object secara aman menghindari bug single quotes
+                const safeData = encodeURIComponent(JSON.stringify(p));
+
+                return `
+                    <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-6 flex flex-col gap-4 text-center group transition-all hover:shadow-md animate-fade-in">
+                        <div class="flex flex-col items-center">
+                            <img src="${imgPath}" class="w-full h-56 rounded-2xl object-cover mb-4 shadow-inner">
+                            <div class="w-full">
+                                <h4 class="text-xl font-bold text-slate-800 uppercase tracking-tight">${p.nama_properti}</h4>
+                                <h5 class="text-2xl font-black text-blue-600 mt-1.5">Rp ${Number(p.hargasewa_standar).toLocaleString('id-ID')}</h5>
+                                <div class="flex gap-2 justify-center my-4">
+                                    <span class="px-3 py-1.5 rounded-full text-[10px] font-bold uppercase bg-emerald-50 text-emerald-600">${p.status_properti}</span>
+                                    <span class="px-3 py-1.5 rounded-full text-[10px] font-bold uppercase bg-blue-50 text-blue-600">${p.tipe_properti}</span>
+                                </div>
+                                <p class="text-xs text-slate-400 mb-4 line-clamp-2 h-8 leading-relaxed">${p.alamat}</p>
+                                <p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">KODE: ${p.kode_properti}</p>
+                            </div>
+                        </div>
+                        ${ROLE === 'tenant' ? `
+                        <div class="flex gap-2 mt-2">
+                            <button onclick="ajukanSewa(${p.id_properti})" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-xl font-bold text-sm transition active:scale-95 shadow-lg shadow-emerald-200 flex items-center justify-center gap-2 uppercase tracking-widest">
+                                <i class="ph-bold ph-handshake text-lg"></i> Ajukan Sewa
+                            </button>
+                            <button onclick="showContactModal()" class="w-[52px] flex-shrink-0 flex items-center justify-center gap-2 border-2 border-slate-200 text-slate-500 py-3.5 rounded-xl font-bold text-sm hover:border-emerald-500 hover:text-emerald-500 transition active:scale-95 bg-white" title="Hubungi Admin">
+                                <i class="ph-bold ph-phone-call text-xl"></i>
+                            </button>
+                        </div>` : `
+                        <div class="flex gap-2 mt-2">
+                             <button onclick="editData(JSON.parse(decodeURIComponent('${safeData}')))" class="flex-1 border-2 border-blue-600 text-blue-600 py-3 rounded-xl font-bold text-xs hover:bg-blue-50 transition uppercase tracking-widest flex justify-center items-center gap-1 active:scale-95">
+                                <i class="ph-bold ph-pencil-simple text-sm"></i> Edit
+                             </button>
+                             <button onclick="hapusData(${p.id_properti})" class="flex-1 border-2 border-red-500 text-red-500 py-3 rounded-xl font-bold text-xs hover:bg-red-50 transition uppercase tracking-widest flex justify-center items-center gap-1 active:scale-95">
+                                <i class="ph-bold ph-trash text-sm"></i> Hapus
+                             </button>
+                        </div>`}
+                    </div>`;
+            }).join('');
+        }
+
+        async function showContactModal() {
+            const modal = document.getElementById('modal-contact');
+            const container = document.getElementById('admin-list-container');
+            
+            modal.classList.remove('hidden');
+            container.innerHTML = `<p class="text-slate-400 animate-pulse text-[11px] font-bold">Mengambil data admin...</p>`;
+
+            try {
+                const res = await fetch(ADMIN_CONTACT_URL, { headers: { 'Authorization': `Bearer ${TOKEN}` } });
+                const result = await res.json();
+                if (result.success && result.admins.length > 0) {
+                    container.innerHTML = result.admins.map(admin => `
+                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col gap-1 items-center">
+                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">WhatsApp/Telp</p>
+                            <a href="https://wa.me/${admin.telepon_pengelola}" target="_blank" class="text-blue-600 font-black text-lg hover:underline transition">${admin.telepon_pengelola}</a>
+                            <p class="text-[10px] text-slate-400 font-medium">${admin.email}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `<p class="text-slate-500 text-xs font-bold py-4">Belum ada kontak admin tersedia.</p>`;
+                }
+            } catch (err) {
+                container.innerHTML = `<p class="text-red-500 text-xs font-bold py-4">Gagal memuat kontak admin.</p>`;
+            }
+        }
+        function closeContactModal() { document.getElementById('modal-contact').classList.add('hidden'); }
+
+        document.getElementById('formProperti').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('prop-id').value;
+            const fileInput = document.getElementById('prop-gambar');
+            
+            const formData = new FormData();
+            formData.append('kode_properti', document.getElementById('prop-kode').value);
+            formData.append('nama_properti', document.getElementById('prop-nama').value);
+            formData.append('tipe_properti', document.getElementById('prop-tipe').value);
+            formData.append('hargasewa_standar', document.getElementById('prop-harga').value);
+            formData.append('alamat', document.getElementById('prop-alamat').value);
+            formData.append('status_properti', document.getElementById('prop-status').value);
+            
+            if (fileInput.files[0]) formData.append('gambar_properti', fileInput.files[0]);
+
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API_URL}/${id}` : API_URL;
+
+            try {
+                const res = await fetch(url, { method, headers: { 'Authorization': `Bearer ${TOKEN}` }, body: formData });
+                const resData = await res.json();
+                if (resData.success) { closeModal(); loadData(); }
+                else { alert(resData.message); }
+            } catch (err) { alert("Terjadi kesalahan jaringan."); }
+        };
+
+        async function hapusData(id) {
+            if (confirm("Hapus aset properti ini secara permanen?")) {
+                const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${TOKEN}` } });
+                if ((await res.json()).success) loadData();
+            }
+        }
+
+        function openModal() {
+            document.getElementById('modal-properti').classList.remove('hidden');
+            document.getElementById('formProperti').reset();
+            document.getElementById('img-preview').classList.add('hidden');
+            document.getElementById('preview-placeholder').classList.remove('hidden');
+            document.getElementById('prop-id').value = "";
+            document.getElementById('modal-title').innerText = "Entry Properti Baru";
+            
+            document.getElementById('prop-id-display').value = "AUTO-INCREMENT";
+            
+            const defaultTipe = document.getElementById('prop-tipe').value;
+            document.getElementById('prop-kode').value = generateKodeProperti(defaultTipe);
+        }
+
+        function editData(p) {
+            document.getElementById('modal-properti').classList.remove('hidden');
+            
+            document.getElementById('modal-title').innerText = "Update Properti";
+            document.getElementById('prop-id').value = p.id_properti;
+            document.getElementById('prop-id-display').value = p.id_properti;
+            document.getElementById('prop-kode').value = p.kode_properti;
+            document.getElementById('prop-nama').value = p.nama_properti;
+            document.getElementById('prop-tipe').value = p.tipe_properti;
+            document.getElementById('prop-harga').value = p.hargasewa_standar;
+            document.getElementById('prop-alamat').value = p.alamat;
+            document.getElementById('prop-status').value = p.status_properti;
+            
+            if (p.gambar_properti && p.gambar_properti !== 'default.jpg') {
+                const preview = document.getElementById('img-preview');
+                preview.src = `${BASE_IMG_URL}${p.gambar_properti}`;
+                preview.classList.remove('hidden');
+                document.getElementById('preview-placeholder').classList.add('hidden');
+            }
+        }
+
+        function closeModal() { document.getElementById('modal-properti').classList.add('hidden'); }
+
+        document.getElementById('prop-gambar').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('img-preview');
+            const placeholder = document.getElementById('preview-placeholder');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        loadData();
+    </script>
+</body>
+</html>

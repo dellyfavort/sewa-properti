@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sewa Properti App | Management System</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="css/component.css">
+    <link rel="stylesheet" href="css/main.css">
+    
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Kamu bisa sesuaikan kode hex ini dengan warna utama di Figma-mu
+                        primary: '#2563eb', 
+                        secondary: '#64748b',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div id="app-root">
+        <div class="min-h-screen flex items-center justify-center">
+            <p class="text-slate-400 animate-pulse text-sm">Menyiapkan sistem...</p>
+        </div>
+    </div>
+
+    <script src="js/state.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/tenant.js"></script>
+    <script src="js/views.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="app.js"></script>
+
+</body>
+</html>

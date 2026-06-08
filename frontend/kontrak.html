@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Kontrak | Core System</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+
+    <script src="js/views.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: { extend: { colors: { primary: '#2563eb', dark: '#0f172a' } } }
+        }
+    </script>
+</head>
+<body class="flex h-screen bg-[#f8fafc] overflow-hidden font-sans relative text-slate-800">
+
+    <aside class="w-72 bg-white border-r border-slate-200 flex-col hidden lg:flex z-20 shadow-[4px_0_24px_rgba(0,0,0,0.02)] shrink-0">
+        <div class="h-20 flex items-center px-8 border-b border-slate-100 cursor-pointer" onclick="window.location.href='index.html'">
+            <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-blue-200">
+                <i class="ph-fill ph-file-text text-white text-xl"></i>
+            </div>
+            <h1 class="font-black text-xl tracking-tight text-slate-800 uppercase">Core<span class="text-blue-600">Contract</span></h1>
+        </div>
+        
+        <div class="px-6 py-8 flex-1 overflow-y-auto">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">Menu Utama</p>
+            <nav id="sidebar-menu" class="flex flex-col gap-1.5">
+            </nav>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative">
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 lg:px-10 z-30 sticky top-0 shrink-0">
+            <div class="flex items-center gap-4">
+                <div class="lg:hidden w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                    <i class="ph-fill ph-file-text text-white text-sm"></i>
+                </div>
+                <h2 id="page-title" class="text-xl font-black text-slate-800 tracking-tighter hidden md:block"></h2>
+            </div>
+            
+            <div class="flex items-center gap-4 sm:gap-6">
+                <button onclick="window.openProfileModal()" class="flex items-center gap-3 text-left hover:bg-slate-50 p-2 rounded-2xl transition active:scale-95 border border-transparent hover:border-slate-100">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-xl flex items-center justify-center font-black text-lg shadow-md" id="header-initial">
+                        -
+                    </div>
+                    <div class="hidden md:block">
+                        <p class="text-sm font-bold text-slate-800 truncate max-w-[120px] capitalize" id="header-name">Memuat...</p>
+                        <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest" id="header-role">Role</p>
+                    </div>
+                    <i class="ph-bold ph-caret-down text-slate-400 hidden sm:block"></i>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-[#f8fafc] p-6 lg:p-10 scroll-smooth relative">
+            <div class="max-w-6xl mx-auto space-y-8">
+                
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-800 tracking-tighter">Daftar <span class="text-blue-600">Kontrak</span></h2>
+                    </div>
+                    
+                    <button id="btn-tambah-kontrak" onclick="openModal()" class="hidden bg-blue-600 text-white px-6 py-4 rounded-2xl font-bold text-sm hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all items-center justify-center gap-2 active:scale-95 shrink-0">
+                        <i class="ph-bold ph-plus text-lg"></i> <span>BUAT KONTRAK BARU</span>
+                    </button>
+                </div>
+
+                <div id="contract-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="modal-profile" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[70] items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100 max-h-[95vh] overflow-y-auto">
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 text-center relative">
+                <button onclick="window.closeProfileModal()" class="absolute top-4 right-4 text-white/70 hover:text-white transition">
+                    <i class="ph ph-x-circle text-3xl"></i>
+                </button>
+                <div class="w-20 h-20 bg-white/20 backdrop-blur-md text-white rounded-2xl flex items-center justify-center font-black text-4xl mx-auto mb-4 border border-white/30 shadow-inner" id="modal-prof-initial">
+                    -
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter capitalize" id="modal-prof-name">Nama</h3>
+                <p class="text-blue-100 text-xs font-bold uppercase tracking-widest mt-1" id="modal-prof-role">Role Account</p>
+                <div id="badge-verifikasi" class="hidden"></div>
+            </div>
+            <form id="form-update-profil" class="p-8 space-y-4" onsubmit="window.submitUpdateProfile(event)">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label id="label-prof-nama" class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">Nama Lengkap</label>
+                        <div class="relative">
+                            <i class="ph-bold ph-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="prof-nama" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700 transition">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">No. Telepon</label>
+                        <div class="relative">
+                            <i class="ph-bold ph-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="prof-telepon" required class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700 transition">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">Email (Akun Login Tetap)</label>
+                    <div class="relative">
+                        <i class="ph-bold ph-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="email" id="prof-email" readonly class="w-full pl-11 pr-4 py-3 bg-slate-100 border border-slate-200 rounded-xl outline-none text-slate-500 font-bold cursor-not-allowed">
+                    </div>
+                </div>
+                <div id="wrap-prof-alamat">
+                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block mb-1">Alamat Domisili Lengkap</label>
+                    <div class="relative">
+                        <i class="ph-bold ph-map-pin absolute left-4 top-4 text-slate-400"></i>
+                        <textarea id="prof-alamat" rows="3" class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 font-bold text-slate-700 transition resize-none"></textarea>
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-slate-100 flex gap-3">
+                    <button type="button" onclick="State.clearAuth()" class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition active:scale-95 shadow-sm border border-red-100 hover:border-red-500" title="Logout">
+                        <i class="ph-bold ph-power text-xl"></i>
+                    </button>
+                    <button type="submit" id="btn-submit-profil" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-blue-700 transition active:scale-95 shadow-lg shadow-blue-200 flex justify-center items-center gap-2">
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-contract" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl p-10 border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-start mb-8">
+                <div>
+                    <h3 id="modal-title" class="text-2xl font-black text-slate-800 uppercase tracking-tighter">Entry Kontrak</h3>
+                    <p id="prop-info-label" class="text-[10px] text-blue-600 font-black mt-1 uppercase tracking-widest"></p>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-red-500 transition"><i class="ph-fill ph-x-circle text-3xl"></i></button>
+            </div>
+
+            <form id="formContract" class="space-y-4">
+                <input type="hidden" id="con-id">
+                
+                <div>
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Pilih Unit (Hanya Tersedia)</label>
+                    <select id="con-properti" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-600 font-bold text-slate-700 transition-all">
+                        <option value="">-- Pilih Ruko/Lantai --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Pilih Nama Penyewa</label>
+                    <select id="con-tenant" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-600 font-bold text-slate-700 transition-all">
+                        <option value="">-- Pilih Penyewa --</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Tgl Mulai</label>
+                        <input type="date" id="con-mulai" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none font-medium focus:border-blue-600 transition-all">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Tgl Selesai</label>
+                        <input type="date" id="con-selesai" required class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl outline-none font-medium focus:border-blue-600 transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Total Nilai Kontrak (Rp) - *Dihitung Otomatis</label>
+                    <input type="text" id="con-nilai-display" placeholder="Kalkulasi Otomatis..." readonly required class="w-full p-3.5 bg-slate-100 border border-slate-200 rounded-xl outline-none font-black text-blue-600 cursor-not-allowed">
+                    <input type="hidden" id="con-nilai">
+                </div>
+
+                <div id="status-container" class="hidden">
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-1 mb-1.5 block">Status Kontrak</label>
+                    <select id="con-status" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl font-black text-slate-800 outline-none focus:border-blue-600 transition-all">
+                        <option value="aktif">AKTIF</option>
+                        <option value="selesai">SELESAI</option>
+                        <option value="dibatalkan">DIBATALKAN</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase tracking-widest mt-6 hover:bg-blue-700 transition active:scale-95 shadow-lg shadow-blue-200">TERBITKAN KONTRAK</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 1. INISIALISASI STATE GLOBAL
+        window.State = {
+            user: {
+                token: localStorage.getItem('token'),
+                role: localStorage.getItem('role') || 'admin',
+                nama: localStorage.getItem('nama'),
+                email: localStorage.getItem('email'),
+                telepon: localStorage.getItem('telepon'),
+                telepon_pengelola: localStorage.getItem('telepon_pengelola'),
+                alamat_domisili: localStorage.getItem('alamat_domisili'),
+                status_verifikasi: localStorage.getItem('status_verifikasi')
+            },
+            clearAuth: () => {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            },
+            syncProfile: () => {
+                window.location.reload(); 
+            }
+        };
+
+        const TOKEN = State.user.token;
+        const ROLE = State.user.role;
+        const API_URL = 'http://127.0.0.1:3000/api/kontrak';
+        const BASE_IMG_URL = 'http://127.0.0.1:3000/uploads/'; 
+        
+        window.propertiCacheMap = {};
+        
+        if (!TOKEN) window.location.href = 'index.html';
+
+        // 2. RENDER HEADER & SIDEBAR
+        let rawName = State.user.nama || State.user.email?.split('@')[0] || ROLE;
+        const userName = rawName;
+        const initial = userName.charAt(0).toUpperCase();
+
+        document.getElementById('header-name').innerText = userName;
+        document.getElementById('header-role').innerText = ROLE;
+        document.getElementById('header-initial').innerText = initial;
+        
+        document.getElementById('modal-prof-name').innerText = userName;
+        document.getElementById('modal-prof-role').innerText = ROLE + " Account";
+        document.getElementById('modal-prof-initial').innerText = initial;
+
+        const menuContainer = document.getElementById('sidebar-menu');
+        const pageTitle = document.getElementById('page-title');
+
+        if (ROLE === 'manager' || ROLE === 'admin') {
+            menuContainer.innerHTML = `
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-squares-four text-xl"></i><span>Dashboard</span>
+                </a>
+                <a href="properti.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-house-line text-xl"></i><span>Manajemen Unit</span>
+                </a>
+                <a href="tenant.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-users-three text-xl"></i><span>Data Penyewa</span>
+                </a>
+                <a href="kontrak.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 bg-blue-50 text-blue-600 shadow-sm border border-blue-100">
+                    <i class="ph-bold ph-file-text text-xl"></i><span>Kontrak Sewa</span>
+                </a>
+                <a href="pembayaran.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-credit-card text-xl"></i><span>Keuangan</span>
+                </a>
+            `;
+            pageTitle.innerHTML = `Kontrak <span class="text-blue-600">Sewa</span>`;
+            document.getElementById('btn-tambah-kontrak').classList.replace('hidden', 'flex');
+        } else if (ROLE === 'tenant') {
+            menuContainer.innerHTML = `
+                <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-squares-four text-xl"></i><span>Dashboard</span>
+                </a>
+                <a href="properti.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-storefront text-xl"></i><span>Katalog Property</span>
+                </a>
+                <a href="kontrak.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 bg-blue-50 text-blue-600 shadow-sm border border-blue-100">
+                    <i class="ph-bold ph-file-text text-xl"></i><span>Kontrak Saya</span>
+                </a>
+                <a href="pembayaran.html" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all duration-200 text-slate-500 hover:bg-slate-100 hover:text-slate-800">
+                    <i class="ph-bold ph-receipt text-xl"></i><span>Tagihan & Bayar</span>
+                </a>
+            `;
+            pageTitle.innerHTML = `Kontrak <span class="text-blue-600">Saya</span>`;
+        }
+
+        // 3. LOGIKA CRUD & DROPDOWN
+        async function prepareDropdowns(selectedPropId = null) {
+            try {
+                const [resProp, resTenant] = await Promise.all([
+                    fetch('http://127.0.0.1:3000/api/properti-tersedia', { headers: { 'Authorization': `Bearer ${TOKEN}` } }),
+                    fetch('http://127.0.0.1:3000/api/tenant/list', { headers: { 'Authorization': `Bearer ${TOKEN}` } })
+                ]);
+                const props = await resProp.json();
+                const tenants = await resTenant.json();
+
+                const propSelect = document.getElementById('con-properti');
+                if(props.success) {
+                    propSelect.innerHTML = '<option value="">-- Pilih Ruko/Lantai --</option>';
+                    props.data.forEach(p => {
+                        window.propertiCacheMap[p.id_properti] = p;
+                        propSelect.innerHTML += `<option value="${p.id_properti}" data-harga="${p.hargasewa_standar}">${p.nama_properti} (${p.kode_properti})</option>`;
+                    });
+                }
+
+                const tenantSelect = document.getElementById('con-tenant');
+                if(tenants.success) {
+                    tenantSelect.innerHTML = '<option value="">-- Pilih Penyewa --</option>';
+                    tenants.data.forEach(t => {
+                        tenantSelect.innerHTML += `<option value="${t.id_tenant}">${t.nama_lengkap}</option>`;
+                    });
+                }
+            } catch (e) { console.error("Dropdown error:", e); }
+        }
+
+        function calculateTotalValue() {
+            const propSelect = document.getElementById('con-properti');
+            const selectedOpt = propSelect.options[propSelect.selectedIndex];
+            const harga = parseFloat(selectedOpt?.dataset.harga || 0);
+            const mulai = new Date(document.getElementById('con-mulai').value);
+            const selesai = new Date(document.getElementById('con-selesai').value);
+
+            if (harga > 0 && selesai > mulai) {
+                const diffDays = Math.ceil((selesai - mulai) / (1000 * 60 * 60 * 24));
+                const total = Math.round((diffDays / 30) * harga);
+                document.getElementById('con-nilai').value = total;
+                document.getElementById('con-nilai-display').value = "Rp " + total.toLocaleString('id-ID');
+            }
+        }
+
+        document.getElementById('con-properti').addEventListener('change', calculateTotalValue);
+        document.getElementById('con-mulai').addEventListener('change', calculateTotalValue);
+        document.getElementById('con-selesai').addEventListener('change', calculateTotalValue);
+
+        // 4. LOAD DATA GRID
+        async function loadData() {
+            const gridContainer = document.getElementById('contract-grid-container');
+            try {
+                const resProp = await fetch('http://127.0.0.1:3000/api/properti', { headers: { 'Authorization': `Bearer ${TOKEN}` } });
+                const resultProp = await resProp.json();
+                if (resultProp.success) {
+                    resultProp.data.forEach(p => window.propertiCacheMap[p.id_properti] = p);
+                }
+
+                const res = await fetch(API_URL, { headers: { 'Authorization': `Bearer ${TOKEN}` } });
+                const result = await res.json();
+                if (result.success) {
+                    gridContainer.innerHTML = result.data.map(k => {
+                        const propertiAsli = window.propertiCacheMap[k.id_properti] || {};
+                        const imgPath = (k.gambar_properti && k.gambar_properti !== 'default.jpg') ? `${BASE_IMG_URL}${k.gambar_properti}` : 'https://placehold.co/600x400?text=No+Image';
+                        const safeData = encodeURIComponent(JSON.stringify(k));
+
+                        return `
+                        <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-6 flex flex-col gap-4 text-center group relative transition-all hover:shadow-md animate-fade-in">
+                            <img src="${imgPath}" class="w-full h-48 rounded-2xl object-cover mb-4 shadow-inner" alt="Unit">
+                            <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest inline-block mb-3 ${k.status_kontrak === 'aktif' ? 'bg-blue-100 text-blue-600' : 'bg-emerald-100 text-emerald-600'}">
+                                ${k.status_kontrak}
+                            </span>
+                            <h4 class="text-xl font-bold text-slate-800 uppercase tracking-tight truncate">${k.nama_properti}</h4>
+                            <p class="text-[10px] text-blue-500 font-black uppercase tracking-widest">${k.kode_properti}</p>
+                            <div class="border-t border-b border-slate-100 my-4 py-3 text-left space-y-2">
+                                <div class="flex justify-between items-center text-xs">
+                                    <span class="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Penyewa</span>
+                                    <span class="font-bold text-slate-700 capitalize">${k.nama_tenant}</span>
+                                </div>
+                                <div class="flex justify-between items-start text-xs">
+                                    <span class="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Masa Sewa</span>
+                                    <span class="font-bold text-slate-600 text-right">${new Date(k.tanggal_mulai).toLocaleDateString('id-ID')} - ${new Date(k.tanggal_selesai).toLocaleDateString('id-ID')}</span>
+                                </div>
+                            </div>
+                            <h5 class="text-2xl font-black text-blue-600 mb-2">Rp ${Number(k.total_nilai_kontrak || 0).toLocaleString('id-ID')}</h5>
+                            <div class="flex gap-2 mt-4 ${ROLE === 'tenant' ? 'hidden' : ''}">
+                                <button onclick="editData(JSON.parse(decodeURIComponent('${safeData}')))" class="flex-1 border-2 border-blue-600 text-blue-600 py-3 rounded-xl font-bold text-xs hover:bg-blue-50 transition uppercase tracking-widest">Edit</button>
+                                <button onclick="hapusData(${k.id_kontrak})" class="flex-1 border-2 border-red-500 text-red-500 py-3 rounded-xl font-bold text-xs hover:bg-red-50 transition uppercase tracking-widest ${ROLE !== 'manager' ? 'hidden' : ''}">Hapus</button>
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
+            } catch (e) { console.error("Database error:", e); }
+        }
+
+        // 5. EVENT HANDLERS
+        document.getElementById('formContract').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('con-id').value;
+    
+            // Ambil id_ajukan dari input hidden
+            const idAjukan = document.getElementById('con-id-ajukan')?.value;
+
+            const data = {
+                id_properti: parseInt(document.getElementById('con-properti').value),
+                id_tenant: parseInt(document.getElementById('con-tenant').value),
+                tanggal_mulai: document.getElementById('con-mulai').value,
+                tanggal_selesai: document.getElementById('con-selesai').value,
+                total_nilai_kontrak: parseFloat(document.getElementById('con-nilai').value),
+                status_kontrak: document.getElementById('con-status').value,
+                // Tambahkan baris ini agar id_ajukan terkirim ke backend
+                id_ajukan: idAjukan || null 
+            };
+    
+            const url = id ? `${API_URL}/${id}` : API_URL;
+            const method = id ? 'PUT' : 'POST';
+    
+            try {
+                const res = await fetch(url, {
+                method: method,
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Authorization': `Bearer ${TOKEN}` 
+                },
+                body: JSON.stringify(data)
+            });
+        
+            const result = await res.json();
+            if (result.success) { 
+                alert("Berhasil!"); 
+                closeModal(); 
+                loadData(); 
+                // Bersihkan URL setelah sukses
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else {
+                alert("Gagal: " + result.message);
+            }
+        } catch (err) { 
+            alert("Error: " + err.message); 
+        }
+    };
+        async function initPage() {
+            await prepareDropdowns();
+            loadData();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const idAjukan = urlParams.get('id_ajukan');
+            
+            if (idAjukan) {
+                openModal();
+                document.getElementById('modal-title').innerText = "Proses Persetujuan";
+                try {
+                    const res = await fetch(`http://127.0.0.1:3000/api/pengajuan/detail?id=${idAjukan}`, {
+                        headers: { 'Authorization': `Bearer ${TOKEN}` }
+                    });
+                    const result = await res.json();
+                    if (result.success) {
+                        const d = result.data;
+                        document.getElementById('con-properti').value = d.id_properti;
+                        document.getElementById('con-tenant').value = d.id_tenant;
+                        setTimeout(calculateTotalValue, 300);
+                    }
+                } catch(e) { console.error("Error auto-fill:", e); }
+            }
+        }
+
+        function openModal() { document.getElementById('modal-contract').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('modal-contract').classList.add('hidden'); }
+        async function hapusData(id) {
+            if (confirm("Hapus data?")) {
+                await fetch(`${API_URL}/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${TOKEN}` } });
+                loadData();
+            }
+        }
+        async function editData(k) {
+            openModal();
+            document.getElementById('con-id').value = k.id_kontrak;
+            
+            // 1. Tunggu dropdown terisi ruko yang "Tersedia"
+            await prepareDropdowns(); 
+
+            const propSelect = document.getElementById('con-properti');
+            
+            // 2. Cek apakah properti milik kontrak ini ada di dalam dropdown
+            let optionSudahAda = Array.from(propSelect.options).some(opt => opt.value == k.id_properti);
+            
+            // 3. Jika tidak ada (karena statusnya 'Tersewa'), ambil dari cache dan paksakan masuk!
+            if (!optionSudahAda) {
+                const p = window.propertiCacheMap[k.id_properti];
+                if (p) {
+                    propSelect.innerHTML += `<option value="${p.id_properti}" data-harga="${p.hargasewa_standar}">${p.nama_properti} (${p.kode_properti})</option>`;
+                } else {
+                    // Fallback aman jika cache gagal
+                    propSelect.innerHTML += `<option value="${k.id_properti}">${k.nama_properti}</option>`; 
+                }
+            }
+            
+            // 4. KUNCI UTAMA: Pilih ruko tersebut di dropdown (Baris ini yang sebelumnya hilang)
+            propSelect.value = k.id_properti;
+
+            // Lanjut mengisi data form lainnya
+            document.getElementById('con-tenant').value = k.id_tenant;
+            document.getElementById('con-mulai').value = k.tanggal_mulai.split('T')[0];
+            document.getElementById('con-selesai').value = k.tanggal_selesai.split('T')[0];
+            document.getElementById('con-nilai').value = k.total_nilai_kontrak;
+            document.getElementById('con-nilai-display').value = "Rp " + Math.round(k.total_nilai_kontrak).toLocaleString('id-ID');
+            document.getElementById('con-status').value = k.status_kontrak;
+            document.getElementById('status-container').classList.remove('hidden');
+        }
+        initPage();
+    </script>
+</body>
+</html>
