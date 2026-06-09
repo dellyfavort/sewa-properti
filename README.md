@@ -57,25 +57,31 @@ Aplikasi web full-stack untuk mengelola penyewaan properti, data tenant, kontrak
 
 ```text
 sewa-properti/
-│
 ├── backend/
-│ ├── controller/ # Logika bisnis (tagihanController, dll)
-│ ├── middleware/ # Middleware autentikasi (auth.js)
-│ ├── uploads/ # Menyimpan gambar upload dari properti & pembayaran
-│ ├── routes/ # Definisi endpoint API (pengajuan.js)
-│ ├── database.js # Konfigurasi koneksi SQL
-│ ├── server.js # Entry point backend Express
-│ └── .env # Environment variables (TIDAK DI-PUSH)
-│ ├── frontend/
-│ ├── assets/ # Gambar dan aset statis
-│ ├── css/ # File CSS & Tailwind (main.css, component.css)
-│ ├── js/ # Logika antarmuka (auth.js, dashboard.js, dll)
-│ └── index.html # Entry Point sekaligus "Kanvas" untuk aplikasi web
-│ └── properti.html
-│ └── tenant.html
-│ └── kontrak.html
-│ └── pembayaran.html
-│ ├── .gitignore
+│   ├── controller/
+│   ├── middleware/
+│   ├── routes/
+│   ├── uploads/
+│   ├── api.js
+│   ├── database.js
+│   ├── models.js
+│   └── server.js
+│
+├── frontend/
+│   ├── assets/
+│   ├── css/
+│   ├── js/
+│   ├── index.html
+│   ├── properti.html
+│   ├── tenant.html
+│   ├── kontrak.html
+│   └── pembayaran.html
+│
+├── prompt/
+│   └── Dokumentasi-Prompt-AI.pdf
+│
+├── sewa_properti.sql
+├── .gitignore
 └── README.md
 ```
 
